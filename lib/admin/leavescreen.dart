@@ -24,6 +24,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
+        // fetch the user details
         stream: db.collection('User').snapshots(),
         builder: (context, userSnapshot) {
           if (userSnapshot.connectionState == ConnectionState.waiting) {
@@ -42,6 +43,7 @@ class _LeaveScreenState extends State<LeaveScreen> {
                 (userDoc) async {
                   String docId = userDoc.id;
 
+                  // retrieve the leave details
                   QuerySnapshot leaveSnapshot = await db
                       .collection('User')
                       .doc(docId)
