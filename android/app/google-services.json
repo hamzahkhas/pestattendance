@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "525943859230",
+    "project_id": "pest-control-attendance-app",
+    "storage_bucket": "pest-control-attendance-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:525943859230:android:4646e090b1f5607ca7e60f",
+        "android_client_info": {
+          "package_name": "com.example.pestattendance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525943859230-ok0a8k8qgbq544lcmfjph87t4q4lqdtc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByP67RI8iSH7uhmkj7B1C3-cMYdURR4Kw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525943859230-ok0a8k8qgbq544lcmfjph87t4q4lqdtc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
