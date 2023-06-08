@@ -65,58 +65,59 @@ class _ManageLeavePageState extends State<ManageLeavePage> {
                   List<Widget> leaveWidgets = [];
                   for (DocumentSnapshot leaveSnapshot in snapshot.data!.docs) {
                     if (selectedStatus == 'All Status' ||
-                        leaveSnapshot['leaveStatus'] == selectedStatus) {}
-                    leaveWidgets.add(
-                      ListTile(
-                        title: Row(
-                          children: [
-                            Text(
-                              leaveSnapshot['leaveType'],
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            SizedBox(
-                              width: 100,
-                            ),
-                            Text(leaveSnapshot['leaveStatus']),
-                          ],
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Text(
-                              'Application Date: ',
-                              style: TextStyle(color: Colors.black87),
-                            ),
-                            Text(
-                              leaveSnapshot['applicationDate'],
-                            ),
-                          ],
-                        ),
-                        // Text(
-                        //   'Application Date: ' +
-                        //       leaveSnapshot['applicationDate'] +
-                        //       ' Status: ' +
-                        //       leaveSnapshot['leaveStatus'],
-                        // ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LeaveDetails(
-                                applicationDate:
-                                    leaveSnapshot['applicationDate'],
-                                startDate: leaveSnapshot['startDate'],
-                                endDate: leaveSnapshot['endDate'],
-                                noOfDays: leaveSnapshot['noOfDays'],
-                                leaveType: leaveSnapshot['leaveType'],
-                                leaveStatus: leaveSnapshot['leaveStatus'],
-                                leaveDescription:
-                                    leaveSnapshot['leaveDescription'],
+                        leaveSnapshot['leaveStatus'] == selectedStatus) {
+                      leaveWidgets.add(
+                        ListTile(
+                          title: Row(
+                            children: [
+                              Text(
+                                leaveSnapshot['leaveType'],
+                                style: TextStyle(color: Colors.black),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
+                              SizedBox(
+                                width: 100,
+                              ),
+                              Text(leaveSnapshot['leaveStatus']),
+                            ],
+                          ),
+                          subtitle: Row(
+                            children: [
+                              Text(
+                                'Application Date: ',
+                                style: TextStyle(color: Colors.black87),
+                              ),
+                              Text(
+                                leaveSnapshot['applicationDate'],
+                              ),
+                            ],
+                          ),
+                          // Text(
+                          //   'Application Date: ' +
+                          //       leaveSnapshot['applicationDate'] +
+                          //       ' Status: ' +
+                          //       leaveSnapshot['leaveStatus'],
+                          // ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LeaveDetails(
+                                  applicationDate:
+                                      leaveSnapshot['applicationDate'],
+                                  startDate: leaveSnapshot['startDate'],
+                                  endDate: leaveSnapshot['endDate'],
+                                  noOfDays: leaveSnapshot['noOfDays'],
+                                  leaveType: leaveSnapshot['leaveType'],
+                                  leaveStatus: leaveSnapshot['leaveStatus'],
+                                  leaveDescription:
+                                      leaveSnapshot['leaveDescription'],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
                   }
                   return ListView(
                     children: leaveWidgets,

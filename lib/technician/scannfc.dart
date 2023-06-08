@@ -20,13 +20,13 @@ class _NFCScanScreenState extends State<NFCScanScreen> {
 
     String response;
     try {
-      response = await FlutterNfcReader.read;
+      //response = await FlutterNfcReader.read;
     } catch (e) {
       response = e.toString();
     }
 
     setState(() {
-      _scanResult = response;
+      // _scanResult = response;
       _isScanning = false;
     });
 
