@@ -8,11 +8,12 @@ import 'package:month_year_picker/month_year_picker.dart';
 import 'package:pestattendance/admin/adminhomescreen.dart';
 import 'package:pestattendance/customer/custhomescreen.dart';
 import 'package:pestattendance/loginscreen2.dart';
+import 'package:pestattendance/manager/managerhomescreen.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'technician/homescreen.dart';
+import 'technician/technicianhomescreen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -119,8 +120,10 @@ class _AuthCheckState extends State<AuthCheck> {
                   return AdminHomeScreen();
                 } else if (dataMap['role'] == "Technician") {
                   return HomeScreen();
-                } else if (dataMap['role'] == "cust") {
+                } else if (dataMap['role'] == "Cust") {
                   return CustHomeScreen();
+                } else if (dataMap['role'] == "Manager") {
+                  return ManagerHomeScreen();
                 } else {
                   return ProfileScreen();
                 }

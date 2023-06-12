@@ -19,6 +19,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String birth = "Date of Birth";
   String firstName = " ";
+  String role = ' ';
 
   @override
   void initState() {
@@ -37,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Map<String, dynamic>? dataMap =
           documentSnapshot.data() as Map<String, dynamic>?;
       setState(() {
+        role = dataMap!['role'] as String;
         firstName = dataMap!['firstName'] as String;
       });
     }
@@ -71,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                "Technician $firstName",
+                "$role $firstName",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,

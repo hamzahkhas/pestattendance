@@ -17,6 +17,7 @@ class CreateLeavePage extends StatefulWidget {
 class _CreateLeavePageState extends State<CreateLeavePage> {
   final _formkey = GlobalKey<FormState>();
   final leaveDescriptionController = TextEditingController();
+  bool isButtonClicked = false;
 
   // default leave type
   String selectedLeaveType = 'Annual Leave';
@@ -304,7 +305,12 @@ class _CreateLeavePageState extends State<CreateLeavePage> {
                   height: 20,
                 ),
                 GestureDetector(
-                  onTap: createLeave,
+                  onTap: () {
+                    if (!isButtonClicked) {
+                      isButtonClicked = true;
+                      createLeave();
+                    }
+                  },
                   child: Container(
                     height: 50,
                     width: 200,

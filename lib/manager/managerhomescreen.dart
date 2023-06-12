@@ -1,32 +1,33 @@
-// ignore_for_file: prefer_const_constructors, deprecated_member_use, unused_local_variable, unnecessary_new
+// ignore_for_file: prefer_const_constructors, deprecated_member_use
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pestattendance/technician/calendarscreen.dart';
+import 'package:pestattendance/admin/manageuserscreen.dart';
+import 'package:pestattendance/manager/managerleavescreen.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
-import 'package:pestattendance/technician/manageleave.dart';
-import 'package:pestattendance/technician/todayscreen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class ManagerHomeScreen extends StatefulWidget {
+  const ManagerHomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<ManagerHomeScreen> createState() => _ManagerHomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   double screenHeight = 0;
   double screenWidth = 0;
+
+  String id = '';
 
   int currentIndex = 1;
 
   List<IconData> navigationIcons = [
-    FontAwesomeIcons.calendarAlt,
-    FontAwesomeIcons.check,
-    FontAwesomeIcons.clipboardCheck,
+    // FontAwesomeIcons.list,
+    Icons.holiday_village_outlined,
+    FontAwesomeIcons.userPlus,
     FontAwesomeIcons.user,
   ];
 
@@ -39,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void getId() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
-        .collection("User")
-        .where('username', isEqualTo: User.username)
+        .collection('User')
+        .where('id', isEqualTo: User.username)
         .get();
 
     setState(() {
@@ -57,10 +58,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: currentIndex,
         children: [
-          new CalendarScreen(), // attendance history
-          new TodayScreen(), // sign in attendance
-          new ManageLeavePage(),
-          new ProfileScreen(), // user profile
+          ManagerLeaveScreen(),
+          ManageUserScreen(),
+          ProfileScreen(), // user profile
         ],
       ),
 

@@ -11,7 +11,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pestattendance/admin/adminhomescreen.dart';
 import 'package:pestattendance/customer/custhomescreen.dart';
-import 'package:pestattendance/technician/homescreen.dart';
+import 'package:pestattendance/manager/managerhomescreen.dart';
+import 'package:pestattendance/technician/technicianhomescreen.dart';
 import 'package:pestattendance/signupscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -143,6 +144,13 @@ class _LoginScreen2State extends State<LoginScreen2> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => CustHomeScreen()),
+                              );
+                              break;
+                            case 'Manager':
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ManagerHomeScreen()),
                               );
                               break;
                             default:

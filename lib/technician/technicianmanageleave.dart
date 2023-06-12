@@ -1,9 +1,9 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations, sort_child_properties_last, prefer_interpolation_to_compose_strings
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations, sort_child_properties_last, prefer_interpolation_to_compose_strings, must_be_immutable, sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pestattendance/model/user.dart';
-import 'package:pestattendance/technician/createleavescreen.dart';
+import 'package:pestattendance/technician/techniciancreateleavescreen.dart';
 
 class ManageLeavePage extends StatefulWidget {
   @override
@@ -111,6 +111,7 @@ class _ManageLeavePageState extends State<ManageLeavePage> {
                                   leaveStatus: leaveSnapshot['leaveStatus'],
                                   leaveDescription:
                                       leaveSnapshot['leaveDescription'],
+                                  leaveDocumentId: leaveSnapshot.id,
                                 ),
                               ),
                             );
@@ -153,10 +154,11 @@ class LeaveDetails extends StatefulWidget {
   final String applicationDate;
   final String leaveType;
   final String leaveStatus;
-  final String leaveDescription;
+  String leaveDescription;
   final String startDate;
   final String endDate;
   final String noOfDays;
+  final String leaveDocumentId;
 
   LeaveDetails({
     required this.applicationDate,
@@ -166,6 +168,7 @@ class LeaveDetails extends StatefulWidget {
     required this.startDate,
     required this.endDate,
     required this.noOfDays,
+    required this.leaveDocumentId,
   });
 
   @override
@@ -173,6 +176,64 @@ class LeaveDetails extends StatefulWidget {
 }
 
 class _LeaveDetailsState extends State<LeaveDetails> {
+  late TextEditingController leaveDescriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    leaveDescriptionController =
+        TextEditingController(text: widget.leaveDescription);
+  }
+
+  void deleteLeave() {
+    if (widget.leaveStatus == 'Approved' || widget.leaveStatus == 'Rejected') {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'This cannot be deleted as it has been ${widget.leaveStatus}')));
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirm Deletion'),
+            content: Text('Are you sure you want to delete this leave?'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                  // Delete the leave from Firestore
+                  deleteLeaveFromFirestore();
+                },
+                child: Text('Delete'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void deleteLeaveFromFirestore() async {
+    try {
+      FirebaseFirestore.instance
+          .collection('User')
+          .doc(User.docId)
+          .collection('Leaves')
+          .doc(widget.leaveDocumentId)
+          .delete();
+      Navigator.pop(context); // Go back to the previous screen
+    } catch (e) {
+      print('Error deleting leave: $e');
+      // Show an error message or handle the error accordingly
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,13 +244,19 @@ class _LeaveDetailsState extends State<LeaveDetails> {
         ),
         backgroundColor: Colors.white,
         leading: IconTheme(
-          data:
-              IconThemeData(color: Colors.black), // Set the desired color here
+          data: IconThemeData(color: Colors.black),
           child: IconButton(
             onPressed: () => Navigator.pop(context),
             icon: Icon(Icons.arrow_back_ios_new_rounded),
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => deleteLeave(),
+            icon: Icon(Icons.delete),
+            color: Colors.red,
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -328,8 +395,8 @@ class _LeaveDetailsState extends State<LeaveDetails> {
               child: TextFormField(
                 style: TextStyle(fontSize: 16, color: Colors.black),
                 maxLines: 6,
-                initialValue: '${widget.leaveDescription}',
-                enabled: false,
+                // enabled: false,
+                controller: leaveDescriptionController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.grey.shade100,
@@ -341,6 +408,35 @@ class _LeaveDetailsState extends State<LeaveDetails> {
                 ),
               ),
             ),
+            ElevatedButton(
+                onPressed: () {
+                  String updatedLeaveDescription =
+                      leaveDescriptionController.text.trim();
+
+                  FirebaseFirestore.instance
+                      .collection('User')
+                      .doc(User.docId)
+                      .collection('Leaves')
+                      .doc(widget.leaveDocumentId)
+                      .update({
+                    'leaveDescription': updatedLeaveDescription,
+                  }).then((value) {
+                    setState(() {
+                      widget.leaveDescription = updatedLeaveDescription;
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Leave Description Updated')),
+                    );
+                  }).catchError((error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Failed to update leave description')),
+                    );
+                  });
+                },
+                child: Text(
+                  'Update Details',
+                ))
           ],
         ),
       ),
