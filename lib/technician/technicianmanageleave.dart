@@ -78,65 +78,23 @@ class _ManageLeavePageState extends State<ManageLeavePage> {
                               SizedBox(
                                 width: 170,
                               ),
-                              if (leaveSnapshot['leaveStatus'] == 'Approved')
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade700,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(5),
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.all(6),
-                                  child: Text(
-                                    leaveSnapshot['leaveStatus'],
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
-                                ),
-                              if (leaveSnapshot['leaveStatus'] == 'Pending')
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.yellow.shade700,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(5),
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.all(6),
-                                  child: Text(
-                                    ' ' + leaveSnapshot['leaveStatus'] + ' ',
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
-                                ),
-                              if (leaveSnapshot['leaveStatus'] == 'Rejected')
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.shade700,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(5),
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.only(
-                                    top: 6,
-                                    bottom: 6,
-                                  ),
-                                  child: Text(
-                                    '  ' + leaveSnapshot['leaveStatus'] + '  ',
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.white),
-                                  ),
-                                ),
                             ],
                           ),
                           subtitle: Row(
                             children: [
                               Text(
-                                'Application Date: ',
+                                'Applied: ',
                                 style: TextStyle(color: Colors.black87),
                               ),
                               Text(
                                 leaveSnapshot['applicationDate'],
                               ),
+                              SizedBox(
+                                width: 160,
+                              ),
+                              Text(
+                                leaveSnapshot['leaveStatus'],
+                              )
                             ],
                           ),
 
@@ -495,14 +453,37 @@ class _LeaveDetailsState extends State<LeaveDetails> {
               SizedBox(
                 height: 15,
               ),
-              if (widget.leaveStatus == 'Pending' &&
-                  widget.leaveType != 'Medical Leave')
+              if (widget.leaveType != 'Medical Leave' &&
+                  widget.leaveStatus == 'Pending')
                 Container(
                   margin: EdgeInsets.only(bottom: 16),
                   child: TextFormField(
                     style: TextStyle(fontSize: 16, color: Colors.black),
                     maxLines: 6,
                     // enabled: false,
+                    controller: leaveDescriptionController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey.shade300,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ),
+              if (widget.leaveType != 'Medical Leave' &&
+                  widget.leaveStatus != 'Pending')
+                Container(
+                  margin: EdgeInsets.only(bottom: 16),
+                  child: TextFormField(
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    maxLines: 6,
+                    enabled: false,
                     controller: leaveDescriptionController,
                     decoration: InputDecoration(
                       filled: true,
