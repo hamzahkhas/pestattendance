@@ -60,7 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
             'firstName': _firstNameController.text,
             'lastName': _lastNameController.text,
             'contact': _contactController.text,
-            'role': "cust",
+            'role': "Customer",
             // 'email': _emailController.text,
             'address': _addressController.text,
           },

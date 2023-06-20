@@ -1,9 +1,10 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations, sort_child_properties_last, prefer_interpolation_to_compose_strings, must_be_immutable, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations, sort_child_properties_last, prefer_interpolation_to_compose_strings, must_be_immutable, sized_box_for_whitespace, unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/technician/techniciancreateleavescreen.dart';
+import 'package:flutter/widgets.dart';
 
 class ManageLeavePage extends StatefulWidget {
   @override
@@ -75,9 +76,56 @@ class _ManageLeavePageState extends State<ManageLeavePage> {
                                 style: TextStyle(color: Colors.black),
                               ),
                               SizedBox(
-                                width: 100,
+                                width: 170,
                               ),
-                              Text(leaveSnapshot['leaveStatus']),
+                              if (leaveSnapshot['leaveStatus'] == 'Approved')
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade700,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.all(6),
+                                  child: Text(
+                                    leaveSnapshot['leaveStatus'],
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
+                              if (leaveSnapshot['leaveStatus'] == 'Pending')
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.yellow.shade700,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.all(6),
+                                  child: Text(
+                                    ' ' + leaveSnapshot['leaveStatus'] + ' ',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
+                              if (leaveSnapshot['leaveStatus'] == 'Rejected')
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.red.shade700,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.only(
+                                    top: 6,
+                                    bottom: 6,
+                                  ),
+                                  child: Text(
+                                    '  ' + leaveSnapshot['leaveStatus'] + '  ',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
                             ],
                           ),
                           subtitle: Row(
@@ -91,12 +139,8 @@ class _ManageLeavePageState extends State<ManageLeavePage> {
                               ),
                             ],
                           ),
-                          // Text(
-                          //   'Application Date: ' +
-                          //       leaveSnapshot['applicationDate'] +
-                          //       ' Status: ' +
-                          //       leaveSnapshot['leaveStatus'],
-                          // ),
+
+                          // redirect to display leave details
                           onTap: () {
                             Navigator.push(
                               context,
@@ -111,6 +155,7 @@ class _ManageLeavePageState extends State<ManageLeavePage> {
                                   leaveStatus: leaveSnapshot['leaveStatus'],
                                   leaveDescription:
                                       leaveSnapshot['leaveDescription'],
+                                  fileUrl: leaveSnapshot['fileUrl'],
                                   leaveDocumentId: leaveSnapshot.id,
                                 ),
                               ),
@@ -159,6 +204,7 @@ class LeaveDetails extends StatefulWidget {
   final String endDate;
   final String noOfDays;
   final String leaveDocumentId;
+  final String fileUrl;
 
   LeaveDetails({
     required this.applicationDate,
@@ -169,6 +215,7 @@ class LeaveDetails extends StatefulWidget {
     required this.endDate,
     required this.noOfDays,
     required this.leaveDocumentId,
+    required this.fileUrl,
   });
 
   @override
@@ -185,6 +232,7 @@ class _LeaveDetailsState extends State<LeaveDetails> {
         TextEditingController(text: widget.leaveDescription);
   }
 
+  // delete function: makes sure if its responded, cannot delete the application
   void deleteLeave() {
     if (widget.leaveStatus == 'Approved' || widget.leaveStatus == 'Rejected') {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -219,6 +267,7 @@ class _LeaveDetailsState extends State<LeaveDetails> {
     }
   }
 
+// remove from firestore
   void deleteLeaveFromFirestore() async {
     try {
       FirebaseFirestore.instance
@@ -258,186 +307,256 @@ class _LeaveDetailsState extends State<LeaveDetails> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              children: [
-                Text(
-                  'Application Date',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 33,
-                ),
-                Text(
-                  '${widget.applicationDate}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            // start date
-            Row(
-              children: [
-                Text(
-                  'Start Date',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 79,
-                ),
-                Text(
-                  '${widget.startDate}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            // end date
-            Row(
-              children: [
-                Text(
-                  'End Date',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 88,
-                ),
-                Text(
-                  '${widget.endDate}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            // leave type
-            Row(
-              children: [
-                Text(
-                  'Leave Type',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 72,
-                ),
-                Text(
-                  '${widget.leaveType}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            //
-            Row(
-              children: [
-                Text(
-                  'Leave Status',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 61,
-                ),
-                Text(
-                  '${widget.leaveStatus}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Leave Description",
-                style: const TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 15,
               ),
-            ),
-            Container(
-              margin: EdgeInsets.only(bottom: 16),
-              child: TextFormField(
-                style: TextStyle(fontSize: 16, color: Colors.black),
-                maxLines: 6,
-                // enabled: false,
-                controller: leaveDescriptionController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey.shade100,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black,
+              DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text(
+                      'Application Date',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      '${widget.applicationDate}',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
+                ],
+                rows: [
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Start Date',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.startDate}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'End Date',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.endDate}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Leave Type',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.leaveType}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Leave Status',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Row(
+                          children: [
+                            if (widget.leaveStatus == 'Approved')
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.green.shade700,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(5),
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(6),
+                                child: Text(
+                                  '${widget.leaveStatus}',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black),
+                                ),
+                              ),
+                            if (widget.leaveStatus == 'Rejected')
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade700,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(5),
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(6),
+                                child: Text(
+                                  '${widget.leaveStatus}',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black),
+                                ),
+                              ),
+                            if (widget.leaveStatus == 'Pending')
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.yellow.shade700,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(5),
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(6),
+                                child: Text(
+                                  '${widget.leaveStatus}',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              if (widget.leaveType != 'Medical Leave')
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    "Leave Description",
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
                 ),
+              if (widget.leaveType == 'Medical Leave')
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    "Medical Cert",
+                    style: const TextStyle(
+                      color: Colors.black87,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              SizedBox(
+                height: 15,
               ),
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  String updatedLeaveDescription =
-                      leaveDescriptionController.text.trim();
+              if (widget.leaveType == 'Medical Leave')
+                Image.network(
+                  widget.fileUrl,
+                  fit: BoxFit.cover,
+                ),
+              SizedBox(
+                height: 15,
+              ),
+              if (widget.leaveStatus == 'Pending' &&
+                  widget.leaveType != 'Medical Leave')
+                Container(
+                  margin: EdgeInsets.only(bottom: 16),
+                  child: TextFormField(
+                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    maxLines: 6,
+                    // enabled: false,
+                    controller: leaveDescriptionController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey.shade300,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ),
+              if (widget.leaveStatus == 'Pending' &&
+                  widget.leaveType != 'Medical Leave')
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.green.shade700),
+                  ),
+                  onPressed: () {
+                    String updatedLeaveDescription =
+                        leaveDescriptionController.text.trim();
 
-                  FirebaseFirestore.instance
-                      .collection('User')
-                      .doc(User.docId)
-                      .collection('Leaves')
-                      .doc(widget.leaveDocumentId)
-                      .update({
-                    'leaveDescription': updatedLeaveDescription,
-                  }).then((value) {
-                    setState(() {
-                      widget.leaveDescription = updatedLeaveDescription;
+                    FirebaseFirestore.instance
+                        .collection('User')
+                        .doc(User.docId)
+                        .collection('Leaves')
+                        .doc(widget.leaveDocumentId)
+                        .update({
+                      'leaveDescription': updatedLeaveDescription,
+                    }).then((value) {
+                      setState(() {
+                        widget.leaveDescription = updatedLeaveDescription;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Leave Description Updated')),
+                      );
+                    }).catchError((error) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text('Failed to update leave description')),
+                      );
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Leave Description Updated')),
-                    );
-                  }).catchError((error) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Failed to update leave description')),
-                    );
-                  });
-                },
-                child: Text(
-                  'Update Details',
-                ))
-          ],
+                  },
+                  child: Text(
+                    'Update Description',
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

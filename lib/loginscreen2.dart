@@ -139,7 +139,7 @@ class _LoginScreen2State extends State<LoginScreen2> {
                                     builder: (context) => HomeScreen()),
                               );
                               break;
-                            case 'Cust':
+                            case 'Customer':
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(

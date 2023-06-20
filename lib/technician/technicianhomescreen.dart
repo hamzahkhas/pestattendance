@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
+import 'package:pestattendance/technician/technicianbookingscreen.dart';
 import 'package:pestattendance/technician/technicianmanageleave.dart';
-import 'package:pestattendance/technician/todayscreen.dart';
+import 'package:pestattendance/technician/technicianattdscreen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,10 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int currentIndex = 1;
 
   List<IconData> navigationIcons = [
+    FontAwesomeIcons.house,
     FontAwesomeIcons.calendarAlt,
-    // FontAwesomeIcons.check,
-    Icons.holiday_village_outlined,
-    FontAwesomeIcons.user,
+    FontAwesomeIcons.clipboardList,
+    FontAwesomeIcons.userAstronaut,
   ];
 
   @override
@@ -56,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: currentIndex,
         children: [
+          new ManageCustBooking(),
           // new CalendarScreen(), // attendance history
           new TodayScreen(), // sign in attendance
           new ManageLeavePage(),

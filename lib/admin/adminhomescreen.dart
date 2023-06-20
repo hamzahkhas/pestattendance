@@ -41,7 +41,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   void getId() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
         .collection("User")
-        .where('id', isEqualTo: User.username)
+        .where('username', isEqualTo: User.username)
         .get();
 
     setState(() {

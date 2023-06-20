@@ -120,7 +120,7 @@ class _AuthCheckState extends State<AuthCheck> {
                   return AdminHomeScreen();
                 } else if (dataMap['role'] == "Technician") {
                   return HomeScreen();
-                } else if (dataMap['role'] == "Cust") {
+                } else if (dataMap['role'] == "Customer") {
                   return CustHomeScreen();
                 } else if (dataMap['role'] == "Manager") {
                   return ManagerHomeScreen();

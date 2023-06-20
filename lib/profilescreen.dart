@@ -73,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Align(
               alignment: Alignment.center,
               child: Text(
-                "$role $firstName",
+                "$firstName",
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w500,

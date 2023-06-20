@@ -26,11 +26,11 @@ class _TodayScreenState extends State<TodayScreen> {
   String checkOut = "--/--";
   String firstName = " ";
 
-  String _month = DateFormat('MMM').format(DateTime.now());
+  // for attendance history retrieval
+  String _month = DateFormat('MMMM').format(DateTime.now());
 
   Future<void> _refresh() async {
-    // Implement your refresh logic here.
-    // For example, you could fetch new data from a remote API.
+    // to refresh
     await Future.delayed(Duration(seconds: 2));
 
     QuerySnapshot snap = await FirebaseFirestore.instance
@@ -51,6 +51,7 @@ class _TodayScreenState extends State<TodayScreen> {
     });
   }
 
+  // init state
   @override
   void initState() {
     super.initState();
@@ -58,6 +59,7 @@ class _TodayScreenState extends State<TodayScreen> {
     _getFirstName();
   }
 
+  // to retrieve attendance from firebase
   void _getAttendance() async {
     try {
       QuerySnapshot snap = await FirebaseFirestore.instance
@@ -105,46 +107,36 @@ class _TodayScreenState extends State<TodayScreen> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Container(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "Today's Status",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: screenWidth / 18,
+            ),
+          ),
+        ),
+      ),
       body: RefreshIndicator(
         onRefresh: _refresh,
+        color: Colors.green.shade700,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // welcome text
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(top: 23),
-                child: Text(
-                  "Welcome",
-                  style: TextStyle(
-                    color: Colors.black45,
-                    fontSize: screenWidth / 20,
-                  ),
-                ),
-              ),
-
-              // technician name
-              Container(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Technician $firstName",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: screenWidth / 18,
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.only(top: 23),
-                child: Text(
-                  "Today's Status",
-                  style: TextStyle(
-                    fontSize: screenWidth / 18,
-                  ),
-                ),
-              ),
+              // Container(
+              //   alignment: Alignment.centerLeft,
+              //   margin: const EdgeInsets.only(top: 23),
+              //   child: Text(
+              //     "How are you today?",
+              //     style: TextStyle(
+              //       fontSize: screenWidth / 18,
+              //     ),
+              //   ),
+              // ),
               Container(
                 margin: const EdgeInsets.only(top: 12, bottom: 32),
                 height: 150,
@@ -273,7 +265,7 @@ class _TodayScreenState extends State<TodayScreen> {
                           innerColor: Colors.green,
                           key: key,
 
-                          // what happens after sliding slider
+                          // update the check in and check out after slide action
                           onSubmit: () async {
                             QuerySnapshot snap = await FirebaseFirestore
                                 .instance
@@ -300,6 +292,7 @@ class _TodayScreenState extends State<TodayScreen> {
                                 },
                               );
 
+                              // update checkout
                               await FirebaseFirestore.instance
                                   .collection("User")
                                   .doc(snap.docs[0].id)
@@ -321,6 +314,7 @@ class _TodayScreenState extends State<TodayScreen> {
                                       .format(DateTime.now());
                                 },
                               );
+                              // update check in
                               await FirebaseFirestore.instance
                                   .collection("User")
                                   .doc(snap.docs[0].id)
@@ -353,14 +347,16 @@ class _TodayScreenState extends State<TodayScreen> {
                       ),
                     ),
               SizedBox(
-                height: 20,
+                height: 40,
               ),
               Divider(
                 color: Colors.black,
                 thickness: 1.0,
               ),
+
+              // display attd history
               Container(
-                alignment: Alignment.centerLeft,
+                alignment: Alignment.topCenter,
                 margin: const EdgeInsets.only(top: 0),
                 child: Text(
                   "Attendance History",
@@ -371,12 +367,15 @@ class _TodayScreenState extends State<TodayScreen> {
                   ),
                 ),
               ),
+              SizedBox(
+                height: 10,
+              ),
               // displaying the month
               Stack(
                 children: [
                   Container(
                     alignment: Alignment.centerLeft,
-                    margin: const EdgeInsets.only(top: 23),
+                    margin: const EdgeInsets.only(top: 23, left: 10),
                     child: Text(
                       _month,
                       style: TextStyle(
@@ -389,14 +388,14 @@ class _TodayScreenState extends State<TodayScreen> {
                   // choose month to display attendance
                   Container(
                     alignment: Alignment.centerRight,
-                    margin: const EdgeInsets.only(top: 23),
-                    child: GestureDetector(
-                      onTap: () async {
+                    margin: const EdgeInsets.only(top: 12),
+                    child: ElevatedButton(
+                      onPressed: () async {
                         final month = await showMonthYearPicker(
                           context: context,
                           initialDate: DateTime.now(),
-                          firstDate: DateTime(2020),
-                          lastDate: DateTime(2099),
+                          firstDate: DateTime(2020, 1),
+                          lastDate: DateTime(2030, 12),
                           builder: (context, child) {
                             return Theme(
                               data: Theme.of(context).copyWith(
@@ -422,16 +421,26 @@ class _TodayScreenState extends State<TodayScreen> {
                           });
                         }
                       },
-                      child: Text(
-                        "Choose Month",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: "NexaBold",
-                          fontSize: screenWidth / 18,
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.black54,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                      ),
+                      child: Container(
+                        child: Text(
+                          "Select Month",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  SizedBox(
+                    height: 0,
+                  )
                 ],
               ),
               SizedBox(
@@ -467,8 +476,8 @@ class _TodayScreenState extends State<TodayScreen> {
                                         offset: Offset(2, 2),
                                       ),
                                     ],
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(20)),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)),
                                   ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,

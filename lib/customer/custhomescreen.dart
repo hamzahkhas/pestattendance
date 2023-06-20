@@ -4,9 +4,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pestattendance/admin/leavescreen.dart';
+import 'package:pestattendance/customer/custbookingscreen.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CustHomeScreen extends StatefulWidget {
   const CustHomeScreen({super.key});
@@ -22,25 +23,24 @@ class _CustHomeScreenState extends State<CustHomeScreen> {
   String id = '';
 
   int currentIndex = 1;
-
+  late SharedPreferences sharedPreferences;
   List<IconData> navigationIcons = [
     FontAwesomeIcons.list,
-    FontAwesomeIcons.bell,
-    FontAwesomeIcons.userPlus,
+    // FontAwesomeIcons.bell,
+    // FontAw esomeIcons.userPlus,
     FontAwesomeIcons.user,
   ];
 
   @override
   void initState() {
     super.initState();
-
     getId();
   }
 
   void getId() async {
     QuerySnapshot snap = await FirebaseFirestore.instance
-        .collection("User")
-        .where('id', isEqualTo: User.username)
+        .collection('User')
+        .where('username', isEqualTo: User.username)
         .get();
 
     setState(() {
@@ -57,7 +57,7 @@ class _CustHomeScreenState extends State<CustHomeScreen> {
       body: IndexedStack(
         index: currentIndex,
         children: [
-          LeaveScreen(),
+          CustBooking(),
           //ManageUserScreen(),
           ProfileScreen(), // user profile
         ],

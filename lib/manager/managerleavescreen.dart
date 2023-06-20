@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pestattendance/model/user.dart';
 
 class ManagerLeaveScreen extends StatefulWidget {
   const ManagerLeaveScreen({super.key});
@@ -27,6 +28,7 @@ class _ManagerLeaveScreenState extends State<ManagerLeaveScreen> {
       ),
       body: Column(
         children: [
+          Text(User.docId),
           Container(
             width: 200,
             child: DropdownButton<String>(
