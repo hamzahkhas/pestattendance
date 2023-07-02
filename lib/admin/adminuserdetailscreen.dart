@@ -38,7 +38,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     return SingleChildScrollView(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.green.shade700,
+          backgroundColor: Colors.red.shade800,
           leading: Icon(Icons.arrow_back_ios_new),
           title: Text('User Details'),
         ),
@@ -86,7 +86,7 @@ class _UserDetailScreenState extends State<UserDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green.shade700,
+        backgroundColor: Colors.red.shade800,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_outlined),
           onPressed: () => Navigator.pop(context),

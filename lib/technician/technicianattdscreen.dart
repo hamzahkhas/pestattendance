@@ -108,13 +108,13 @@ class _TodayScreenState extends State<TodayScreen> {
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.purple.shade800,
         title: Container(
           alignment: Alignment.centerLeft,
           child: Text(
             "Today's Status",
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: screenWidth / 18,
             ),
           ),
@@ -232,7 +232,6 @@ class _TodayScreenState extends State<TodayScreen> {
                 ),
               ),
               StreamBuilder(
-
                   // how fast the time updates
                   stream: Stream.periodic(const Duration(seconds: 1)),
                   builder: (context, snapshot) {

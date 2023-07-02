@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pestattendance/loginscreen2.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -98,22 +99,28 @@ class _SignUpPageState extends State<SignUpPage> {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Register',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+        leading: IconTheme(
+          data:
+              IconThemeData(color: Colors.black), // Set the desired color here
+          child: IconButton(
+            onPressed: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen2()),
+            ),
+            icon: Icon(Icons.arrow_back_ios_new_rounded),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            Container(
-              alignment: Alignment.centerLeft,
-              margin: const EdgeInsets.only(top: 23),
-              child: Text(
-                "User Registration",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: "NexaBold",
-                  fontSize: screenWidth / 18,
-                ),
-              ),
-            ),
             Padding(
               padding: EdgeInsets.all(16),
               child: Form(
@@ -165,7 +172,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         "First Name", "Your First Name", _firstNameController),
                     textField(
                         "Last Name", "Your Last Name", _lastNameController),
-                    textField(
+                    textFieldPhoneNumber(
                         "Contact No", "Your Phone Number", _contactController),
                     textField("Address", "Your Adress", _addressController),
                   ],
@@ -259,6 +266,88 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget textFieldPhoneNumber(
+      String title, String hint, TextEditingController controller) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            title,
+            style: const TextStyle(color: Colors.black87),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 12),
+          child: TextFormField(
+            controller: controller,
+            cursorColor: Colors.black54,
+            maxLines: 1,
+            keyboardType: TextInputType.phone, // Set the keyboard type to phone
+            inputFormatters: [
+              // Use inputFormatters to format the input
+              LengthLimitingTextInputFormatter(
+                  15), // Limit the length to 15 characters
+              FilteringTextInputFormatter.digitsOnly, // Allow only digits
+              _ContactNumberFormatter(), // Custom formatter for contact number
+            ],
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Colors.black54,
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black54,
+                ),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Please enter your " + title;
+              } else {
+                return null;
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ContactNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // Remove any non-digit characters from the input value
+    String formattedText = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    // Add a dash at specific positions to format the contact number
+    if (formattedText.length >= 3 && formattedText.length < 7) {
+      formattedText =
+          formattedText.substring(0, 3) + '-' + formattedText.substring(3);
+    } else if (formattedText.length >= 7) {
+      formattedText =
+          formattedText.substring(0, 3) + '-' + formattedText.substring(3);
+    }
+
+    if (formattedText.length > 12) {
+      formattedText = formattedText.substring(0, 12);
+    }
+
+    // Return the updated TextEditingValue
+    return newValue.copyWith(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: formattedText.length),
     );
   }
 }

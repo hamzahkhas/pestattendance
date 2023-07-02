@@ -2,7 +2,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pestattendance/model/user.dart';
 
 class ManagerLeaveScreen extends StatefulWidget {
   const ManagerLeaveScreen({super.key});
@@ -14,16 +13,16 @@ class ManagerLeaveScreen extends StatefulWidget {
 class _ManagerLeaveScreenState extends State<ManagerLeaveScreen> {
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  String selectedStatus = 'All Status';
+  String selectedStatus = 'Pending';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue.shade800,
         title: Text(
           'Manage Leaves',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: Column(
@@ -37,10 +36,10 @@ class _ManagerLeaveScreenState extends State<ManagerLeaveScreen> {
               onChanged: (String? newValue) {
                 setState(() {
                   selectedStatus =
-                      newValue ?? 'All Status'; // Update selected role
+                      newValue ?? 'Pending'; // Update selected role
                 });
               },
-              items: <String>['All Status', 'Pending', 'Approved', 'Rejected']
+              items: <String>['Pending', 'Approved', 'Rejected']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -86,8 +85,7 @@ class _ManagerLeaveScreenState extends State<ManagerLeaveScreen> {
                           // Process the leaveSnapshot data
                           for (DocumentSnapshot leaveDoc
                               in leaveSnapshot.docs) {
-                            if (selectedStatus == 'All Status' ||
-                                leaveDoc['leaveStatus'] == selectedStatus) {
+                            if (leaveDoc['leaveStatus'] == selectedStatus) {
                               leaveWidgets.add(
                                 ListTile(
                                   title: Row(
@@ -223,12 +221,12 @@ class _LeaveDetailsState extends State<LeaveDetails> {
       appBar: AppBar(
         title: Text(
           'Leave Details',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue.shade800,
         leading: IconTheme(
           data:
-              IconThemeData(color: Colors.black), // Set the desired color here
+              IconThemeData(color: Colors.white), // Set the desired color here
           child: IconButton(
             onPressed: () => Navigator.pop(context),
             icon: Icon(Icons.arrow_back_ios_new_rounded),

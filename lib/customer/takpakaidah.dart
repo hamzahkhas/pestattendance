@@ -5,6 +5,7 @@ import 'dart:core';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pestattendance/customer/custbookingscreen.dart';
 import 'package:pestattendance/model/user.dart';
 
 class CreateNewBookingPage extends StatefulWidget {
@@ -16,12 +17,23 @@ class CreateNewBookingPage extends StatefulWidget {
 
 class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
   final _formkey = GlobalKey<FormState>();
-  final leaveDescriptionController = TextEditingController();
+  final bookingController = TextEditingController();
   bool isButtonClicked = false;
 
-  // default leave type
-  String selectedLeaveType = 'Annual Leave';
-  String leaveDescription = '';
+  TimeOfDay _selectedTime = TimeOfDay(hour: 9, minute: 0);
+
+  List<DropdownMenuItem<TimeOfDay>> _buildTimeOptions() {
+    List<DropdownMenuItem<TimeOfDay>> items = [];
+    for (int hour = 9; hour <= 16; hour++) {
+      items.add(
+        DropdownMenuItem(
+          value: TimeOfDay(hour: hour, minute: 0),
+          child: Text('${hour.toString().padLeft(2, '0')}:00'),
+        ),
+      );
+    }
+    return items;
+  }
 
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
@@ -43,33 +55,26 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
     }
   }
 
-  // booking timeslow
-  List<BookingTimeSlot> timeSlots = [
-    BookingTimeSlot(startTime: '9 AM', endTime: '10 AM'),
-    BookingTimeSlot(startTime: '10 AM', endTime: '11 AM'),
-    BookingTimeSlot(startTime: '11 AM', endTime: '12 PM'),
-    BookingTimeSlot(startTime: '12 PM', endTime: '1 PM'),
-    BookingTimeSlot(startTime: '2 PM', endTime: '3 PM'),
-    BookingTimeSlot(startTime: '3 PM', endTime: '4 PM'),
-    BookingTimeSlot(startTime: '4 PM', endTime: '5 PM'),
-  ];
+  void createBooking() async {
+    final db2 = FirebaseFirestore.instance.collection('User').doc(User.docId);
 
-  void createLeave() async {
-    await FirebaseFirestore.instance
-        .collection('User')
-        .doc(User.docId)
-        .collection('Leaves')
-        .add(
+    final bookingCollection = db2.collection('Booking');
+
+    // check if collection exists
+    final bookingCollectionSnapshot = await bookingCollection.get();
+    if (bookingCollectionSnapshot.docs.isEmpty) {
+      // 'Booking' collection does not exist, create it
+      await bookingCollection.add({});
+    }
+    await bookingCollection.add(
       {
         'applicationDate': DateFormat('dd MMMM yyyy').format(DateTime.now()),
-        'leaveType': selectedLeaveType,
-        'startDate':
-            '${startDate != null ? DateFormat('dd MMM yyyy').format(startDate) : ''}',
-        'endDate':
-            '${endDate != null ? DateFormat('dd MMM yyyy').format(endDate) : ''}',
-        'noOfDays': '$numberOfDays',
-        'leaveDescription': leaveDescriptionController.text,
-        'leaveStatus': 'Pending',
+        'preferredDate': selectedDate,
+        'preferredTime': _selectedTime,
+        'bookingDetails': bookingController.text,
+        'status': 'Pending',
+        'technicianName': '-',
+        'technicianContact': '-',
       },
     );
 
@@ -78,7 +83,7 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
       builder: (context) {
         return AlertDialog(
           title: Text('Success!'),
-          content: Text('Leave applied successfully!'),
+          content: Text('Booking made successfully!'),
           actions: [
             TextButton(
               onPressed: () {
@@ -93,14 +98,14 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
     );
   }
 
-  DateTime? selectedDate;
+  DateTime? selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'New Leave',
+          'New Booking',
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -126,7 +131,7 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
                     columns: [
                       DataColumn(
                         label: Text(
-                          'Booking Date',
+                          'Preferred Date',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -190,170 +195,36 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
                             ),
                           ),
                           DataCell(
-                            GestureDetector(
-                                // onTap: ,
-                                ),
+                            DropdownButtonFormField(
+                              value: _selectedTime,
+                              onChanged: (value) {
+                                setState(
+                                  () {
+                                    _selectedTime = value!;
+                                  },
+                                );
+                              },
+                              items: _buildTimeOptions(),
+                              decoration: InputDecoration(
+                                hintText: 'Select Time',
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 10),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                // leavetype
-                Row(
-                  children: [
-                    Text(
-                      'Leave Type',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 30,
-                    ),
-                    DropdownButton<String>(
-                      value: selectedLeaveType,
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          setState(() {
-                            selectedLeaveType = newValue;
-                          });
-                        }
-                      },
-                      items: [
-                        'Annual Leave',
-                        'Unpaid Leave',
-                        'Medical Leave',
-                        'Emergency Leave'
-                      ].map<DropdownMenuItem<String>>(
-                        (String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        },
-                      ).toList(),
-                    ),
-                  ],
-                ),
                 SizedBox(
-                  height: 4,
-                ),
-
-                // select leave date
-                Row(
-                  children: [
-                    Text(
-                      'Leave Date(s)',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 12,
-                    ),
-                    ElevatedButton(
-                      onPressed: () => _selectDate(context),
-                      child: Text('Select Date Range'),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.resolveWith<Color>(
-                          (Set<MaterialState> states) {
-                            if (states.contains(MaterialState.pressed)) {
-                              return Colors.green.shade700.withOpacity(0.5);
-                            } else if (states
-                                .contains(MaterialState.disabled)) {
-                              return Colors.green.shade700.withOpacity(0.5);
-                            }
-                            return Colors.green.shade700;
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-
-                // display start date
-                Row(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Start Date",
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 33,
-                    ),
-                    Text(
-                      ' ${startDate != null ? DateFormat('dd MMM yyyy').format(startDate) : ''}',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-
-                // display end date
-                Row(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "End Date",
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 41,
-                    ),
-                    Text(
-                      ' ${endDate != null ? DateFormat('dd MMM yyyy').format(endDate) : ''}',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 24,
-                ),
-
-                // display no of days
-                Row(
-                  children: [
-                    Text(
-                      "No of Day(s)",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Text(
-                      '$numberOfDays',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 24,
+                  height: 20,
                 ),
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.topCenter,
                   child: Text(
-                    "Leave Description",
+                    "Booking Description",
                     style: const TextStyle(
                       color: Colors.black87,
                       fontWeight: FontWeight.bold,
@@ -361,15 +232,18 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 5,
+                ),
                 Container(
                   margin: EdgeInsets.only(bottom: 12),
                   child: TextFormField(
                     style: TextStyle(fontSize: 16),
-                    controller: leaveDescriptionController,
+                    controller: bookingController,
                     cursorColor: Colors.black54,
                     maxLines: 6,
                     decoration: InputDecoration(
-                      hintText: "Enter your leave reason",
+                      hintText: "Write your pest problems.",
                       hintStyle: TextStyle(
                         color: Colors.black54,
                       ),
@@ -386,7 +260,7 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return "Please enter your leave reason";
+                        return "Please enter your pest problem!";
                       } else {
                         return null;
                       }
@@ -400,7 +274,7 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
                   onTap: () {
                     if (!isButtonClicked) {
                       isButtonClicked = true;
-                      createLeave();
+                      createBooking();
                     }
                   },
                   child: Container(
@@ -413,7 +287,7 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
                             const BorderRadius.all(Radius.circular(25))),
                     child: Center(
                       child: Text(
-                        "Apply",
+                        "Book",
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
@@ -430,16 +304,4 @@ class _CreateNewBookingPageState extends State<CreateNewBookingPage> {
       ),
     );
   }
-}
-
-class BookingTimeSlot {
-  final String startTime;
-  final String endTime;
-  int availableSlots;
-
-  BookingTimeSlot({
-    required this.startTime,
-    required this.endTime,
-    this.availableSlots = 2,
-  });
 }

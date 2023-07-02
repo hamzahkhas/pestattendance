@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pestattendance/customer/custcreatebookingscreen.dart';
+import 'package:pestattendance/customer/custcreatebooking.dart';
 import 'package:pestattendance/model/user.dart';
 
 class CustBooking extends StatefulWidget {
@@ -12,18 +12,48 @@ class CustBooking extends StatefulWidget {
 
 class _CustBookingState extends State<CustBooking> {
   final FirebaseFirestore db = FirebaseFirestore.instance;
+
+  String selectedStatus = 'Pending';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.green.shade800,
         title: Text(
-          'Service Booking',
-          style: TextStyle(color: Colors.black),
+          'Pest Control Booking ',
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: Column(
         children: [
+          Container(
+            width: 200,
+            child: DropdownButton<String>(
+              isExpanded: true,
+              value: selectedStatus,
+              alignment: Alignment.topCenter,
+              onChanged: (String? newValue) {
+                setState(() {
+                  selectedStatus = newValue ?? 'Pending';
+                });
+              },
+              items: <String>['Pending', 'Confirmed']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
           Expanded(
             child: StreamBuilder(
               stream: db
@@ -36,44 +66,55 @@ class _CustBookingState extends State<CustBooking> {
                   List<Widget> bookingWidgets = [];
                   for (DocumentSnapshot bookingSnapshot
                       in snapshot.data!.docs) {
-                    bookingWidgets.add(
-                      ListTile(
-                        title: Row(
-                          children: [
-                            Text(
-                              bookingSnapshot['bookingDate'],
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ],
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Text(
-                              'Service Time',
-                              style: TextStyle(color: Colors.black87),
-                            ),
-                            Text(
-                              bookingSnapshot['serviceTime'],
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BookingDetails(
-                                bookingDate: bookingSnapshot['bookingDate'],
-                                serviceTime: bookingSnapshot['serviceTime'],
-                                bookingDetails:
-                                    bookingSnapshot['bookingDetails'],
-                                bookingStatus: bookingSnapshot['bookingStatus'],
-                                bookingId: bookingSnapshot.id,
+                    if (bookingSnapshot['status'] == selectedStatus) {
+                      bookingWidgets.add(
+                        ListTile(
+                          title: Row(
+                            children: [
+                              Text(
+                                bookingSnapshot['preferredDate'].toString(),
+                                style: TextStyle(color: Colors.black),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
+                            ],
+                          ),
+                          subtitle: Row(
+                            children: [
+                              Text(
+                                'Service Time: ',
+                                style: TextStyle(color: Colors.black87),
+                              ),
+                              Text(
+                                bookingSnapshot['preferredTime'].toString(),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BookingDetails(
+                                  applicationDate:
+                                      bookingSnapshot['bookingDate'],
+                                  pestType: bookingSnapshot['pestType'],
+                                  preferredDate:
+                                      bookingSnapshot['preferredDate'],
+                                  preferredTime:
+                                      bookingSnapshot['preferredTime'],
+                                  bookingDescription:
+                                      bookingSnapshot['bookingDescription'],
+                                  status: bookingSnapshot['status'],
+                                  technicianName:
+                                      bookingSnapshot['technicianName'],
+                                  technicianContact:
+                                      bookingSnapshot['technicianContact'],
+                                  bookingId: bookingSnapshot.id,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    }
                   }
                   return ListView(
                     children: bookingWidgets,
@@ -92,11 +133,11 @@ class _CustBookingState extends State<CustBooking> {
         child: Icon(Icons.add),
         backgroundColor: Colors.green.shade700,
         onPressed: () {
-          // Redirect to the CreateUserScreen to create a new user
+          // Redirect to the create bookingpage
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CreateNewBookingPage(),
+              builder: (context) => CustCreateBooking(),
             ),
           );
         },
@@ -106,21 +147,28 @@ class _CustBookingState extends State<CustBooking> {
 }
 
 class BookingDetails extends StatefulWidget {
-  final String bookingDate;
-  final String serviceTime;
-  String bookingDetails;
-  final String bookingStatus;
+  final String applicationDate;
+  final String pestType;
+  final String preferredDate;
+  final String preferredTime;
+  String bookingDescription;
+  final String status;
+  final String technicianName;
+  final String technicianContact;
   final String bookingId;
 
   BookingDetails({
-    required this.bookingDate,
-    required this.serviceTime,
-    required this.bookingDetails,
-    required this.bookingStatus,
+    required this.applicationDate,
+    required this.pestType,
+    required this.preferredDate,
+    required this.preferredTime,
+    required this.bookingDescription,
+    required this.status,
+    required this.technicianName,
+    required this.technicianContact,
     required this.bookingId,
   });
 
-  @override
   _BookingDetailsState createState() => _BookingDetailsState();
 }
 
@@ -130,14 +178,15 @@ class _BookingDetailsState extends State<BookingDetails> {
   @override
   void initState() {
     super.initState();
-    // bookingDetailsController = TextEditingController(text: widget.bookingDetails);
+    bookingDetailsController =
+        TextEditingController(text: widget.bookingDescription);
   }
 
   // delete function: makes sure if its responded, cannot delete the application
   void deleteBooking() {
-    if (widget.bookingStatus == 'Confirmed') {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Cannot Delete: Booking ${widget.bookingStatus}')));
+    if (widget.status == 'Confirmed') {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cannot Delete: Booking ${widget.status}')));
     } else {
       showDialog(
         context: context,
@@ -189,9 +238,9 @@ class _BookingDetailsState extends State<BookingDetails> {
       appBar: AppBar(
         title: Text(
           'Booking Details',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.green.shade800,
         leading: IconTheme(
           data: IconThemeData(color: Colors.black),
           child: IconButton(
@@ -227,7 +276,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                     ),
                     DataColumn(
                       label: Text(
-                        '${widget.bookingDate}',
+                        '${widget.applicationDate}',
                         style: TextStyle(
                           fontSize: 16,
                         ),
@@ -239,7 +288,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                       cells: [
                         DataCell(
                           Text(
-                            "Service Time",
+                            "Preferred Date",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -248,7 +297,28 @@ class _BookingDetailsState extends State<BookingDetails> {
                         ),
                         DataCell(
                           Text(
-                            '${widget.serviceTime}',
+                            '${widget.preferredDate}',
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    DataRow(
+                      cells: [
+                        DataCell(
+                          Text(
+                            "Preferred Time",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          Text(
+                            '${widget.preferredTime}',
                             style: TextStyle(
                               fontSize: 16,
                             ),
@@ -268,15 +338,102 @@ class _BookingDetailsState extends State<BookingDetails> {
                           ),
                         ),
                         DataCell(
-                          Text(
-                            '${widget.bookingStatus}',
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
+                          Row(
+                            children: [
+                              if (widget.status == 'Active')
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade700,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.all(6),
+                                  child: Text(
+                                    '${widget.status}',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.white),
+                                  ),
+                                ),
+                              if (widget.status == 'Completed')
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.all(6),
+                                  child: Text(
+                                    '${widget.status}',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.black),
+                                  ),
+                                ),
+                              if (widget.status == 'Pending')
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.yellow.shade700,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5),
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.all(6),
+                                  child: Text(
+                                    '${widget.status}',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.black),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ],
                     ),
+                    if (widget.status == 'Active')
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Text(
+                              "Tech Name",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                            Text(
+                              '${widget.technicianName}',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    if (widget.status == 'Active')
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            Text(
+                              "Tech Contact",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                            Text(
+                              '${widget.technicianContact}',
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
@@ -303,7 +460,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                 child: TextFormField(
                   style: TextStyle(fontSize: 16, color: Colors.black),
                   maxLines: 6,
-                  initialValue: '${widget.bookingDetails}',
+                  initialValue: '${widget.bookingDescription}',
                   enabled: false,
                   // controller: bookingDetailsController,
                   decoration: InputDecoration(
@@ -317,7 +474,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                   ),
                 ),
               ),
-              if (widget.bookingStatus != 'Confirmed')
+              if (widget.status != 'Confirmed')
                 ElevatedButton(
                   onPressed: () {
                     String updatedLeaveDescription =
@@ -332,7 +489,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                       'leaveDescription': updatedLeaveDescription,
                     }).then((value) {
                       setState(() {
-                        widget.bookingDetails = updatedLeaveDescription;
+                        widget.bookingDescription = updatedLeaveDescription;
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Leave Description Updated')),

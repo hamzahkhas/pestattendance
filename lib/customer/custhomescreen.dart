@@ -4,6 +4,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pestattendance/customer/custbookinghistory.dart';
 import 'package:pestattendance/customer/custbookingscreen.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
@@ -26,8 +27,8 @@ class _CustHomeScreenState extends State<CustHomeScreen> {
   late SharedPreferences sharedPreferences;
   List<IconData> navigationIcons = [
     FontAwesomeIcons.list,
-    // FontAwesomeIcons.bell,
-    // FontAw esomeIcons.userPlus,
+    FontAwesomeIcons.history,
+    // FontAwesomeIcons.userPlus,
     FontAwesomeIcons.user,
   ];
 
@@ -58,7 +59,7 @@ class _CustHomeScreenState extends State<CustHomeScreen> {
         index: currentIndex,
         children: [
           CustBooking(),
-          //ManageUserScreen(),
+          CustBookingHistory(),
           ProfileScreen(), // user profile
         ],
       ),

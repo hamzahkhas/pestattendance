@@ -51,6 +51,9 @@ class _LoginScreen2State extends State<LoginScreen2> {
             height: 200,
             width: 200,
           ),
+          SizedBox(
+            height: 10,
+          ),
 
           Container(
             margin: EdgeInsets.only(bottom: 30),
@@ -75,6 +78,9 @@ class _LoginScreen2State extends State<LoginScreen2> {
           //       ),
 
           // username and password text field
+          SizedBox(
+            height: 40,
+          ),
           Container(
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.symmetric(horizontal: screenWidth / 12),
@@ -85,7 +91,7 @@ class _LoginScreen2State extends State<LoginScreen2> {
                 customTextField("Enter Username", usernameController,
                     false), // username textfield
                 fieldTitle("Password"),
-                customTextField("Enter Password", passwordController,
+                customPasswordTextField("Enter Password", passwordController,
                     true), // password textfield
                 // login button
                 GestureDetector(
@@ -271,6 +277,56 @@ class _LoginScreen2State extends State<LoginScreen2> {
             width: screenWidth / 6,
             child: Icon(
               Icons.person,
+              color: Colors.green.shade700,
+              size: screenWidth / 15,
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(right: screenWidth / 12),
+              child: TextFormField(
+                controller: controller,
+                enableSuggestions: false,
+                autocorrect: false,
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: screenHeight / 35,
+                    ),
+                    border: InputBorder.none,
+                    hintText: hint),
+                maxLines: 1,
+                obscureText: obscure,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget customPasswordTextField(
+      String hint, TextEditingController controller, bool obscure) {
+    return Container(
+      width: screenWidth,
+      margin: EdgeInsets.only(bottom: screenHeight / 30),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(2, 2),
+            ),
+          ]),
+
+      // textfield row
+      child: Row(
+        children: [
+          Container(
+            width: screenWidth / 6,
+            child: Icon(
+              Icons.lock,
               color: Colors.green.shade700,
               size: screenWidth / 15,
             ),

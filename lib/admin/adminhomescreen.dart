@@ -4,8 +4,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pestattendance/admin/leavescreen.dart';
-import 'package:pestattendance/admin/manageuserscreen.dart';
+import 'package:pestattendance/admin/adminleavescreen.dart';
+import 'package:pestattendance/admin/adminmanageusersscreen.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
 
@@ -58,6 +58,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       body: IndexedStack(
         index: currentIndex,
         children: [
+          // ScanNfc(),
           LeaveScreen(),
           ManageUserScreen(),
           ProfileScreen(), // user profile
@@ -102,7 +103,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                           Icon(
                             navigationIcons[i],
                             color: i == currentIndex
-                                ? Colors.green.shade700
+                                ? Colors.red.shade800
                                 : Colors.black26,
                             size: i == currentIndex ? 28 : 24,
                           ),

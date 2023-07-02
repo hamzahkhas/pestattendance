@@ -4,8 +4,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pestattendance/admin/manageuserscreen.dart';
-import 'package:pestattendance/manager/managerattdscreen.dart';
+import 'package:pestattendance/admin/adminmanageusersscreen.dart';
 import 'package:pestattendance/manager/managerattdscreen2.dart';
 import 'package:pestattendance/manager/managerleavescreen.dart';
 import 'package:pestattendance/model/user.dart';
@@ -30,7 +29,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
     // FontAwesomeIcons.list,
     Icons.holiday_village_outlined,
     FontAwesomeIcons.clipboardList,
-    FontAwesomeIcons.userPlus,
+    // FontAwesomeIcons.userPlus,
     FontAwesomeIcons.userAlt,
   ];
 
@@ -63,7 +62,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
         children: [
           ManagerLeaveScreen(),
           ManagerAttd(),
-          ManageUserScreen(),
+          // ManageUserScreen(),
           ProfileScreen(), // user profile
         ],
       ),
@@ -106,7 +105,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
                           Icon(
                             navigationIcons[i],
                             color: i == currentIndex
-                                ? Colors.green.shade700
+                                ? Colors.blue.shade800
                                 : Colors.black26,
                             size: i == currentIndex ? 28 : 24,
                           ),

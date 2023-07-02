@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
-import 'package:pestattendance/technician/technicianbookingscreen.dart';
+import 'package:pestattendance/technician/techbookingprototype.dart';
+import 'package:pestattendance/technician/takpakai.dart';
 import 'package:pestattendance/technician/technicianmanageleave.dart';
 import 'package:pestattendance/technician/technicianattdscreen.dart';
+import 'package:pestattendance/technician/technicianviewbookinghistory.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<IconData> navigationIcons = [
     FontAwesomeIcons.house,
+    FontAwesomeIcons.history,
     FontAwesomeIcons.calendarAlt,
     FontAwesomeIcons.clipboardList,
     FontAwesomeIcons.userAstronaut,
@@ -57,8 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: IndexedStack(
         index: currentIndex,
         children: [
-          new ManageCustBooking(),
-          // new CalendarScreen(), // attendance history
+          new TechBooking(),
+          new TechBookingHistory(), // attendance history
           new TodayScreen(), // sign in attendance
           new ManageLeavePage(),
           new ProfileScreen(), // user profile
@@ -103,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icon(
                             navigationIcons[i],
                             color: i == currentIndex
-                                ? Colors.green.shade700
+                                ? Colors.purple.shade700
                                 : Colors.black26,
                             size: i == currentIndex ? 28 : 24,
                           ),

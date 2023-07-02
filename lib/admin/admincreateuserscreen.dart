@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pestattendance/admin/manageuserscreen.dart';
+import 'package:nfc_manager/nfc_manager.dart';
+import 'package:pestattendance/admin/adminmanageusersscreen.dart';
 
 class CreateUserScreen extends StatefulWidget {
   @override
@@ -44,7 +45,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             content: Text("Choose a different username."),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
                 child: Text('OK'),
               ),
             ],
@@ -78,6 +82,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
           'contact': _contactController.text,
           'role': selectedRole,
           'address': _addressController.text,
+          'nfcIdentifier': _tagValueController.text,
         },
       );
 
@@ -115,6 +120,56 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     return null;
   }
 
+  final TextEditingController _tagValueController = TextEditingController();
+
+  List<int> tagValue = [];
+
+  void initNfc() async {
+    await NfcManager.instance.startSession(
+      onDiscovered: (NfcTag tag) async {
+        readNfcTag(tag);
+      },
+    );
+  }
+
+  Future<List<int>> getTagValue(NfcTag tag) async {
+    // Retrieve and process the tag value here
+    // Replace this with your actual logic to get the tag value
+    Ndef? ndef = Ndef.from(tag);
+    if (ndef == null) {
+      throw Exception("Tag isn't NDEF formatted.");
+    }
+    print(ndef.additionalData['identifier']);
+
+    List<int> tagValue = ndef.additionalData['identifier'];
+    return tagValue;
+  }
+
+  void readNfcTag(NfcTag tag) async {
+    try {
+      List<int> tagValue = await getTagValue(tag);
+
+      setState(() {
+        this.tagValue = tagValue;
+        _tagValueController.text = tagValue.join('');
+      });
+    } catch (e) {
+      // Handle any errors that occur during reading
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initNfc();
+  }
+
+  @override
+  void dispose() {
+    NfcManager.instance.stopSession();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -122,7 +177,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     return Container(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.green.shade700,
+          backgroundColor: Colors.red.shade800,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
@@ -249,7 +304,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                             });
                           }
                         },
-                        items: <String>['Technician', 'Manager', 'Admin']
+                        items: <String>['Technician', 'Manager']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -266,6 +321,23 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
 
                   // get address
                   textField("Address", "Your Adress", _addressController),
+
+                  Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Text(
+                      'NFC Tag Value:',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    _tagValueController.text != ""
+                        ? _tagValueController.text
+                        : "Not scanned yet",
+                    style: TextStyle(fontSize: 16),
+                  ),
+
                   GestureDetector(
                     onTap: createUser,
                     child: Container(

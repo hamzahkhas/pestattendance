@@ -158,9 +158,9 @@ class _CreateLeavePageState extends State<CreateLeavePage> {
       appBar: AppBar(
         title: Text(
           'New Leave',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.purple.shade800,
         leading: IconTheme(
           data:
               IconThemeData(color: Colors.black), // Set the desired color here
@@ -405,59 +405,6 @@ class _CreateLeavePageState extends State<CreateLeavePage> {
                         ),
                     ],
                   ),
-                //   Column(
-                //     children: [
-                //       // select file button
-                //       ElevatedButton(
-                //         onPressed: selectFile,
-                //         child: Text('Add MC'),
-                //       ),
-                //       SizedBox(
-                //         height: 20,
-                //       ),
-
-                //       if (pickedFile != null)
-                //         Expanded(
-                //           child: Container(
-                //             child: Center(
-                //               child: Image.file(
-                //                 File(pickedFile!.path!),
-                //                 width: double.infinity,
-                //                 fit: BoxFit.cover,
-                //               ),
-                //             ),
-                //           ),
-                //         ),
-                //       SizedBox(
-                //         height: 20,
-                //       ),
-
-                //       // create leave
-                //       GestureDetector(
-                //         onTap: uploadFile,
-                //         child: Container(
-                //           height: 50,
-                //           width: 200,
-                //           margin: EdgeInsets.only(top: 10),
-                //           decoration: BoxDecoration(
-                //               color: Colors.black87,
-                //               borderRadius:
-                //                   const BorderRadius.all(Radius.circular(25))),
-                //           child: Center(
-                //             child: Text(
-                //               "Upload",
-                //               style: TextStyle(
-                //                 fontSize: 18,
-                //                 color: Colors.white,
-                //                 letterSpacing: 2,
-                //               ),
-                //             ),
-                //           ),
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-
                 SizedBox(
                   height: 20,
                 ),

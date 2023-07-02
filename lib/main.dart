@@ -10,7 +10,6 @@ import 'package:pestattendance/customer/custhomescreen.dart';
 import 'package:pestattendance/loginscreen2.dart';
 import 'package:pestattendance/manager/managerhomescreen.dart';
 import 'package:pestattendance/model/user.dart';
-import 'package:pestattendance/profilescreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'technician/technicianhomescreen.dart';
@@ -125,7 +124,7 @@ class _AuthCheckState extends State<AuthCheck> {
                 } else if (dataMap['role'] == "Manager") {
                   return ManagerHomeScreen();
                 } else {
-                  return ProfileScreen();
+                  return LoginScreen2();
                 }
               } else {
                 return Center(

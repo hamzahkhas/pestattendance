@@ -6,5 +6,6 @@ class User {
   static String lastName = " ";
   static String birthDate = " ";
   static String address = " ";
+  static String contact = ' ';
   static bool canEdit = true;
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pestattendance/loginscreen2.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:random_string/random_string.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -39,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           documentSnapshot.data() as Map<String, dynamic>?;
       setState(() {
         role = dataMap!['role'] as String;
-        firstName = dataMap!['firstName'] as String;
+        firstName = dataMap['firstName'] as String;
       });
     }
   }
@@ -86,35 +87,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
             textField("First Name", "First name"),
             textField("Last Name", "Last name"),
             textField("Contact No.", "Phone No."),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                birth,
-                style: const TextStyle(color: Colors.black87),
-              ),
-            ),
-            Container(
-              height: kToolbarHeight,
-              width: screenWidth,
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: Colors.black54,
-                ),
-              ),
-              child: Container(
-                padding: const EdgeInsets.only(left: 11),
-                alignment: Alignment.centerLeft,
-                child: const Text(
-                  "Date of Birth",
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.centerLeft,
+            //   child: Text(
+            //     birth,
+            //     style: const TextStyle(color: Colors.black87),
+            //   ),
+            // ),
+            // Container(
+            //   height: kToolbarHeight,
+            //   width: screenWidth,
+            //   margin: const EdgeInsets.only(bottom: 12),
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(4),
+            //     border: Border.all(
+            //       color: Colors.black54,
+            //     ),
+            //   ),
+            //   child: Container(
+            //     padding: const EdgeInsets.only(left: 11),
+            //     alignment: Alignment.centerLeft,
+            //     child: const Text(
+            //       "Date of Birth",
+            //       style: TextStyle(
+            //         color: Colors.black54,
+            //         fontSize: 16,
+            //       ),
+            //     ),
+            //   ),
+            // ),
             textField("Address", "Adress"),
             Text('Profile Screen ' + User.username.toUpperCase()),
             MaterialButton(
@@ -136,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            "Date of Birth",
+            title,
             style: const TextStyle(color: Colors.black87),
           ),
         ),

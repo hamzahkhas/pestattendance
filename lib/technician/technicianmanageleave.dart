@@ -19,10 +19,10 @@ class _ManageLeavePageState extends State<ManageLeavePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.purple.shade800,
         title: Text(
           'Manage Leaves',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: Column(

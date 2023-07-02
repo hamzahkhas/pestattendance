@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pestattendance/admin/createuserscreen.dart';
+import 'package:pestattendance/admin/admincreateuserscreen.dart';
 
 class ManageUserScreen extends StatefulWidget {
   @override
@@ -17,10 +17,10 @@ class _ManageUserScreenState extends State<ManageUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.red.shade800,
         title: Text(
           'Manage Users',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: Column(children: [
@@ -62,8 +62,9 @@ class _ManageUserScreenState extends State<ManageUserScreen> {
 
                 for (DocumentSnapshot userSnapshot in sortedUsers) {
                   // filter according to user types
-                  if (selectedRole == 'All Users' ||
-                      userSnapshot['role'] == selectedRole) {
+                  if ((selectedRole == 'All Users' ||
+                          userSnapshot['role'] == selectedRole) &&
+                      userSnapshot['role'] != 'Customer') {
                     usersWidget.add(
                       ListTile(
                         title: Row(
@@ -163,9 +164,9 @@ class _UserDetailsState extends State<UserDetails> {
       appBar: AppBar(
         title: Text(
           '${widget.role} Details',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.red.shade800,
         leading: IconTheme(
           data:
               IconThemeData(color: Colors.black), // Set the desired color here
@@ -179,125 +180,107 @@ class _UserDetailsState extends State<UserDetails> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              children: [
-                Text(
-                  'Username',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            DataTable(
+              columns: [
+                DataColumn(
+                  label: Text(
+                    'Username',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(
-                  width: 33,
+                DataColumn(
+                  label: Text(
+                    '${widget.username}',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
-                Text(
-                  '${widget.username}',
-                  style: TextStyle(fontSize: 16),
+              ],
+              rows: [
+                DataRow(
+                  cells: [
+                    DataCell(
+                      Text(
+                        'First Name',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        '${widget.firstName}',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                DataRow(
+                  cells: [
+                    DataCell(
+                      Text(
+                        'Last Name',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        '${widget.lastName}',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                DataRow(
+                  cells: [
+                    DataCell(
+                      Text(
+                        'Role',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        '${widget.role}',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                DataRow(
+                  cells: [
+                    DataCell(
+                      Text(
+                        'Contact No',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    DataCell(
+                      Text(
+                        '${widget.contact}',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
             SizedBox(
               height: 15,
             ),
-
-            // start date
-            Row(
-              children: [
-                Text(
-                  'First Name',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 79,
-                ),
-                Text(
-                  '${widget.firstName}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            // end date
-            Row(
-              children: [
-                Text(
-                  'Last Name',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 88,
-                ),
-                Text(
-                  '${widget.lastName}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            // leave type
-            Row(
-              children: [
-                Text(
-                  'Role',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 72,
-                ),
-                Text(
-                  '${widget.role}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
-            //
-            Row(
-              children: [
-                Text(
-                  'contact No',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(
-                  width: 61,
-                ),
-                Text(
-                  '${widget.contact}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: Alignment.topCenter,
               child: Text(
                 "Address",
                 style: const TextStyle(
@@ -306,6 +289,9 @@ class _UserDetailsState extends State<UserDetails> {
                   fontSize: 16,
                 ),
               ),
+            ),
+            SizedBox(
+              height: 15,
             ),
             Container(
               margin: EdgeInsets.only(bottom: 16),

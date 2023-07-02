@@ -17,10 +17,10 @@ class _LeaveScreenState extends State<LeaveScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.red.shade800,
         title: Text(
           'Manage Leaves',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -164,9 +164,9 @@ class _LeaveDetailsState extends State<LeaveDetails> {
       appBar: AppBar(
         title: Text(
           'Leave Details',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.red.shade800,
         leading: IconTheme(
           data:
               IconThemeData(color: Colors.black), // Set the desired color here
