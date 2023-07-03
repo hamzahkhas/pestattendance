@@ -10,6 +10,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pestattendance/admin/adminhomescreen.dart';
+import 'package:pestattendance/admin/scan.dart';
 import 'package:pestattendance/customer/custhomescreen.dart';
 import 'package:pestattendance/manager/managerhomescreen.dart';
 import 'package:pestattendance/technician/technicianhomescreen.dart';
@@ -43,201 +44,223 @@ class _LoginScreen2State extends State<LoginScreen2> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // company logo
-          Image.asset(
-            'assets/easelife.png',
-            height: 200,
-            width: 200,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-
-          Container(
-            margin: EdgeInsets.only(bottom: 30),
-            child: Text(
-              "WELCOME",
-              style: TextStyle(
-                fontSize: 30,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: SafeArea(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ScanScreen(),
+                          ),
+                        );
+                      },
+                      child: Icon(
+                        Icons.qr_code_scanner_rounded,
+                        size: 35,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // welcome text
-          // isKeyboardVisible
-          //     ? SizedBox()
-          //     : Container(
-          //         margin: EdgeInsets.only(
-          //             top: screenHeight / 100, bottom: screenHeight / 10),
-          //         child: Text(
-          //           "Welcome",
-          //           style: TextStyle(fontSize: screenWidth / 12),
-          //         ),
-          //       ),
+            // company logo
+            Image.asset(
+              'assets/easelife.png',
+              height: 200,
+              width: 200,
+            ),
+            SizedBox(
+              height: 5,
+            ),
 
-          // username and password text field
-          SizedBox(
-            height: 40,
-          ),
-          Container(
-            alignment: Alignment.centerLeft,
-            margin: EdgeInsets.symmetric(horizontal: screenWidth / 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                fieldTitle("Username"),
-                customTextField("Enter Username", usernameController,
-                    false), // username textfield
-                fieldTitle("Password"),
-                customPasswordTextField("Enter Password", passwordController,
-                    true), // password textfield
-                // login button
-                GestureDetector(
-                  onTap: () async {
-                    FocusScope.of(context).unfocus();
-                    String username = usernameController.text.trim();
-                    String password = passwordController.text.trim();
+            Container(
+              margin: EdgeInsets.only(bottom: 30),
+              child: Text(
+                "WELCOME",
+                style: TextStyle(
+                  fontSize: 30,
+                ),
+              ),
+            ),
 
-                    // check if username/password is empty
-                    if (username.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Username field is empty!"),
-                      ));
-                    } else if (password.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text("Password field is empty!"),
-                      ));
-                    } else {
-                      // verify username and password
-                      QuerySnapshot snap = await FirebaseFirestore.instance
-                          .collection("User")
-                          .where('username', isEqualTo: username)
-                          .limit(1)
-                          .get();
-
-                      try {
-                        // check if password is correct
-                        if (snap.size == 1 &&
-                            snap.docs.first.get('password') == password) {
-                          final sharedPreferences =
-                              await SharedPreferences.getInstance();
-                          await sharedPreferences.setString(
-                              'username', username);
-                          //
-                          // get role of users
-                          String role = snap.docs.first.get('role');
-
-                          // redirect accordingly
-                          switch (role) {
-                            case 'Admin':
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AdminHomeScreen()),
-                              );
-                              break;
-                            case 'Technician':
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HomeScreen()),
-                              );
-                              break;
-                            case 'Customer':
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CustHomeScreen()),
-                              );
-                              break;
-                            case 'Manager':
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ManagerHomeScreen()),
-                              );
-                              break;
-                            default:
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen2()),
-                              );
-                          }
-                        } else {
-                          // return error message
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                            content: Text("Username or password is incorrect!"),
-                          ));
-                        }
-                      } catch (e) {
-                        String error = " ";
-
-                        if (e.toString() ==
-                            "RangeError (index): Invalid value: Valid value range is empty: 0") {
-                          error = 'Username does not exist';
-                        } else {
-                          error = "Error has occured!";
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(error),
-                        ));
-
-                        setState(() {});
-                      }
-                    }
-                  },
-
+            // username and password text field
+            SizedBox(
+              height: 30,
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.symmetric(horizontal: screenWidth / 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  fieldTitle("Username"),
+                  customTextField("Enter Username", usernameController,
+                      false), // username textfield
+                  fieldTitle("Password"),
+                  customPasswordTextField("Enter Password", passwordController,
+                      true), // password textfield
                   // login button
-                  child: Container(
-                    height: 60,
-                    width: screenWidth,
-                    margin: EdgeInsets.only(top: screenHeight / 40),
-                    decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(25))),
-                    child: Center(
-                      child: Text(
-                        "Log In",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          letterSpacing: 2,
+                  GestureDetector(
+                    onTap: () async {
+                      FocusScope.of(context).unfocus();
+                      String username = usernameController.text.trim();
+                      String password = passwordController.text.trim();
+
+                      // check if username/password is empty
+                      if (username.isEmpty) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Username field is empty!"),
+                        ));
+                      } else if (password.isEmpty) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Password field is empty!"),
+                        ));
+                      } else {
+                        // verify username and password
+                        QuerySnapshot snap = await FirebaseFirestore.instance
+                            .collection("User")
+                            .where('username', isEqualTo: username)
+                            .limit(1)
+                            .get();
+
+                        try {
+                          // check if password is correct
+                          if (snap.size == 1 &&
+                              snap.docs.first.get('password') == password) {
+                            final sharedPreferences =
+                                await SharedPreferences.getInstance();
+                            await sharedPreferences.setString(
+                                'username', username);
+                            //
+                            // get role of users
+                            String role = snap.docs.first.get('role');
+
+                            // redirect accordingly
+                            switch (role) {
+                              case 'Admin':
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AdminHomeScreen()),
+                                );
+                                break;
+                              case 'Technician':
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomeScreen()),
+                                );
+                                break;
+                              case 'Customer':
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CustHomeScreen()),
+                                );
+                                break;
+                              case 'Manager':
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ManagerHomeScreen()),
+                                );
+                                break;
+                              default:
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen2()),
+                                );
+                            }
+                          } else {
+                            // return error message
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content:
+                                  Text("Username or password is incorrect!"),
+                            ));
+                          }
+                        } catch (e) {
+                          String error = " ";
+
+                          if (e.toString() ==
+                              "RangeError (index): Invalid value: Valid value range is empty: 0") {
+                            error = 'Username does not exist';
+                          } else {
+                            error = "Error has occured!";
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(error),
+                          ));
+
+                          setState(() {});
+                        }
+                      }
+                    },
+
+                    // login button
+                    child: Container(
+                      height: 60,
+                      width: screenWidth,
+                      margin: EdgeInsets.only(top: screenHeight / 40),
+                      decoration: BoxDecoration(
+                          color: Colors.black87,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(25))),
+                      child: Center(
+                        child: Text(
+                          "Log In",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            letterSpacing: 2,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SignUpPage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.all(20),
-                    child: Center(
-                      child: Text(
-                        "New here? Sign Up",
-                        style: TextStyle(
-                            fontSize: 16, color: Colors.green.shade700),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignUpPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.all(20),
+                      child: Center(
+                        child: Text(
+                          "New here? Sign Up",
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.green.shade700),
+                        ),
                       ),
                     ),
                   ),
-                )
-              ],
+                  SizedBox(
+                    height: 200,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

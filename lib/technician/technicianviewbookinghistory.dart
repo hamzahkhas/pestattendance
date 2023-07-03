@@ -20,7 +20,7 @@ class _TechBookingHistoryState extends State<TechBookingHistory> {
       appBar: AppBar(
         // ignore: prefer_const_constructors
         title: Text(
-          'View Booking History',
+          'Appointment History',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.purple.shade800,
@@ -187,6 +187,25 @@ class _BookingDetailsState extends State<BookingDetails> {
                   )
                 ],
                 rows: [
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Cust Name',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.custName}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
                   DataRow(
                     cells: [
                       DataCell(

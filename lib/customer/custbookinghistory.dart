@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_string_interpolations, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, unnecessary_string_interpolations, prefer_const_literals_to_create_immutables, must_be_immutable
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +79,9 @@ class _CustBookingHistoryState extends State<CustBookingHistory> {
                                       bookingSnapshot['technicianName'],
                                   technicianContact:
                                       bookingSnapshot['technicianContact'],
+                                  completeDate: bookingSnapshot['serviceDate'],
+                                  serviceCompleteTime:
+                                      bookingSnapshot['serviceCompleteTime'],
                                   bookingId: bookingSnapshot.id,
                                 ),
                               ),
@@ -115,6 +118,8 @@ class BookingDetails extends StatefulWidget {
   final String technicianName;
   final String technicianContact;
   final String bookingId;
+  final String completeDate;
+  final String serviceCompleteTime;
 
   BookingDetails({
     required this.applicationDate,
@@ -126,6 +131,8 @@ class BookingDetails extends StatefulWidget {
     required this.technicianName,
     required this.technicianContact,
     required this.bookingId,
+    required this.completeDate,
+    required this.serviceCompleteTime,
   });
 
   _BookingDetailsState createState() => _BookingDetailsState();
@@ -143,9 +150,9 @@ class _BookingDetailsState extends State<BookingDetails> {
       appBar: AppBar(
         title: Text(
           'Booking Details',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.green.shade700,
         leading: IconTheme(
           data: IconThemeData(color: Colors.black),
           child: IconButton(
@@ -240,7 +247,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.black54,
+                                  color: Colors.black87,
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(5),
                                   ),
@@ -335,6 +342,48 @@ class _BookingDetailsState extends State<BookingDetails> {
                       DataCell(
                         Text(
                           "${widget.technicianContact}",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          "Service Date",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          "${widget.completeDate}",
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          "Complete Time",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          "${widget.serviceCompleteTime}",
                           style: TextStyle(
                             fontSize: 16,
                           ),

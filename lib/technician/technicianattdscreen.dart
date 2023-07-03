@@ -346,7 +346,7 @@ class _TodayScreenState extends State<TodayScreen> {
                       ),
                     ),
               SizedBox(
-                height: 40,
+                height: 130,
               ),
               Divider(
                 color: Colors.black,

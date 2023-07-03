@@ -4,6 +4,7 @@ class User {
   static String role = " ";
   static String firstName = " ";
   static String lastName = " ";
+  static String password = '';
   static String birthDate = " ";
   static String address = " ";
   static String contact = ' ';

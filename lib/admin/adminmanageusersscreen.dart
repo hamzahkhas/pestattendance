@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pestattendance/admin/admincreateuserscreen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ManageUserScreen extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _ManageUserScreenState extends State<ManageUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red.shade800,
+        backgroundColor: Colors.blue.shade800,
         title: Text(
           'Manage Users',
           style: TextStyle(color: Colors.white),
@@ -35,7 +36,7 @@ class _ManageUserScreenState extends State<ManageUserScreen> {
                 selectedRole = newValue ?? 'All Users'; // Update selected role
               });
             },
-            items: <String>['All Users', 'Admin', 'Technician', 'Manager']
+            items: <String>['All Users', 'Technician', 'Manager']
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -64,7 +65,8 @@ class _ManageUserScreenState extends State<ManageUserScreen> {
                   // filter according to user types
                   if ((selectedRole == 'All Users' ||
                           userSnapshot['role'] == selectedRole) &&
-                      userSnapshot['role'] != 'Customer') {
+                      userSnapshot['role'] != 'Customer' &&
+                      userSnapshot['role'] != 'Admin') {
                     usersWidget.add(
                       ListTile(
                         title: Row(
@@ -96,9 +98,11 @@ class _ManageUserScreenState extends State<ManageUserScreen> {
                                 username: userSnapshot['username'],
                                 firstName: userSnapshot['firstName'],
                                 lastName: userSnapshot['lastName'],
+                                cardId: userSnapshot['nfcIdentifier'],
                                 role: userSnapshot['role'],
                                 contact: userSnapshot['contact'],
                                 address: userSnapshot['address'],
+                                id: userSnapshot.id,
                               ),
                             ),
                           );
@@ -140,17 +144,21 @@ class UserDetails extends StatefulWidget {
   final String username;
   final String firstName;
   final String lastName;
+  final String cardId;
   final String role;
   final String contact;
-  final String address;
+  String address;
+  final String id;
 
   UserDetails({
     required this.username,
     required this.firstName,
     required this.lastName,
     required this.role,
+    required this.cardId,
     required this.contact,
     required this.address,
+    required this.id,
   });
 
   @override
@@ -158,15 +166,63 @@ class UserDetails extends StatefulWidget {
 }
 
 class _UserDetailsState extends State<UserDetails> {
+  late TextEditingController addressController;
+
+  @override
+  void initState() {
+    super.initState();
+    addressController = TextEditingController(text: widget.address);
+  }
+
+  // confirmation to delete user
+  void deleteUser() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Deletion'),
+          content: Text('Are you sure you want to delete this user forever?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+                // Delete the leave from Firestore
+                deleteUserFromFirestore();
+              },
+              child: Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // remove user from firebase
+  void deleteUserFromFirestore() async {
+    try {
+      FirebaseFirestore.instance.collection('User').doc(widget.id).delete();
+      Navigator.pop(context); // Go back to the previous screen
+    } catch (e) {
+      print('Error deleting leave: $e');
+      // Show an error message or handle the error accordingly
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${widget.role} Details',
+          '${widget.role} Details ',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.red.shade800,
+        backgroundColor: Colors.blue.shade800,
         leading: IconTheme(
           data:
               IconThemeData(color: Colors.black), // Set the desired color here
@@ -175,6 +231,13 @@ class _UserDetailsState extends State<UserDetails> {
             icon: Icon(Icons.arrow_back_ios_new_rounded),
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => deleteUser(),
+            icon: Icon(Icons.delete),
+            color: Colors.white,
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -198,6 +261,26 @@ class _UserDetailsState extends State<UserDetails> {
                 ),
               ],
               rows: [
+                if (widget.role == 'Technician')
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Card ID',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.cardId}',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 DataRow(
                   cells: [
                     DataCell(
@@ -265,10 +348,18 @@ class _UserDetailsState extends State<UserDetails> {
                       ),
                     ),
                     DataCell(
-                      Text(
-                        '${widget.contact}',
-                        style: TextStyle(
-                          fontSize: 16,
+                      GestureDetector(
+                        onTap: () {
+                          launch(
+                              'tel:${widget.contact}'); // Launch the phone app with the contact number
+                        },
+                        child: Text(
+                          '${widget.contact}',
+                          style: TextStyle(
+                            fontSize: 16,
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
                     ),
@@ -294,23 +385,59 @@ class _UserDetailsState extends State<UserDetails> {
               height: 15,
             ),
             Container(
+              width: 300,
               margin: EdgeInsets.only(bottom: 16),
-              child: TextFormField(
-                style: TextStyle(fontSize: 16, color: Colors.black),
-                maxLines: 6,
-                initialValue: '${widget.address}',
-                enabled: false,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey.shade100,
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black,
+              child: GestureDetector(
+                onTap: () {
+                  launch(
+                      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(widget.address)}');
+                },
+                child: TextFormField(
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                  maxLines: 4,
+                  initialValue: '${widget.address}',
+                  enabled: false,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Colors.grey.shade200,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                   ),
                 ),
               ),
             ),
+            SizedBox(
+              height: 30,
+            ),
+            // GestureDetector(
+            //   onTap: () {
+            //     // deleteUser();
+            //   },
+            //   child: Container(
+            //     height: 50,
+            //     width: 170,
+            //     margin: EdgeInsets.only(top: 10),
+            //     decoration: BoxDecoration(
+            //       color: Colors.black87,
+            //       borderRadius: const BorderRadius.all(
+            //         Radius.circular(10),
+            //       ),
+            //     ),
+            //     child: Center(
+            //       child: Text(
+            //         'Update Details',
+            //         style: TextStyle(
+            //             fontSize: 18, color: Colors.white, letterSpacing: 2),
+            //       ),
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),

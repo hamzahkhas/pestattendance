@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:pestattendance/admin/adminmanageusersscreen.dart';
 
@@ -23,6 +24,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   final _addressController = TextEditingController();
   String selectedRole = 'Technician';
 
+  // save user in firebase
   void createUser() async {
     final username = _usernameController.text;
     final password = _passwordController.text;
@@ -120,6 +122,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     return null;
   }
 
+// to get value of nfc
   final TextEditingController _tagValueController = TextEditingController();
 
   List<int> tagValue = [];
@@ -132,9 +135,8 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     );
   }
 
+  // get the value of serial number
   Future<List<int>> getTagValue(NfcTag tag) async {
-    // Retrieve and process the tag value here
-    // Replace this with your actual logic to get the tag value
     Ndef? ndef = Ndef.from(tag);
     if (ndef == null) {
       throw Exception("Tag isn't NDEF formatted.");
@@ -145,6 +147,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     return tagValue;
   }
 
+  // read the serial number of nfc card
   void readNfcTag(NfcTag tag) async {
     try {
       List<int> tagValue = await getTagValue(tag);
@@ -170,6 +173,24 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     super.dispose();
   }
 
+  String? _validateContactNo(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your $fieldName';
+    }
+    return null;
+  }
+
+  String? _validateContact(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your Contact No';
+    }
+    final contactRegExp = RegExp(r'^\d{1,11}$');
+    if (!contactRegExp.hasMatch(value)) {
+      return 'Contact No must be a numeric value with a maximum of 11 digits';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
@@ -177,12 +198,13 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     return Container(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.red.shade800,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          backgroundColor: Colors.blue.shade800,
+          leading: IconTheme(
+            data: IconThemeData(color: Colors.black),
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios_new_rounded),
+            ),
           ),
           title: Text('Create User'),
         ),
@@ -316,16 +338,20 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                   ),
 
                   // get contact no
-                  textField(
-                      "Contact No", "Your Phone Number", _contactController),
+                  textFieldContact(
+                    "Contact No",
+                    "eg: 01134323455",
+                    _contactController,
+                  ),
 
                   // get address
-                  textField("Address", "Your Adress", _addressController),
+                  textFieldAddress(
+                      "Address", "Your Adress", _addressController),
 
                   Padding(
                     padding: EdgeInsets.only(top: 10),
                     child: Text(
-                      'NFC Tag Value:',
+                      'NFC Card ID:',
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -336,6 +362,10 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                         ? _tagValueController.text
                         : "Not scanned yet",
                     style: TextStyle(fontSize: 16),
+                  ),
+
+                  SizedBox(
+                    height: 20,
                   ),
 
                   GestureDetector(
@@ -369,6 +399,51 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     );
   }
 
+  Widget textFieldContact(
+      String title, String hint, TextEditingController controller) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            title,
+            style: const TextStyle(color: Colors.black87),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 12),
+          child: TextFormField(
+            controller: controller,
+            cursorColor: Colors.black54,
+            keyboardType: TextInputType.number,
+            maxLength: 11, // Maximum length set to 11 digits
+            maxLines: 1,
+            buildCounter: (BuildContext context,
+                    {int? currentLength, int? maxLength, bool? isFocused}) =>
+                null, // Remove character counter
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Colors.black54,
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black54,
+                ),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+            validator: _validateContact,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget textField(
       String title, String hint, TextEditingController controller) {
     return Column(
@@ -386,6 +461,46 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
             controller: controller,
             cursorColor: Colors.black54,
             maxLines: 1,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Colors.black54,
+              ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black54,
+                ),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+            validator: (value) => _validateRequired(value, title),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget textFieldAddress(
+      String title, String hint, TextEditingController controller) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            title,
+            style: const TextStyle(color: Colors.black87),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 12),
+          child: TextFormField(
+            controller: controller,
+            cursorColor: Colors.black54,
+            maxLines: 3,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(

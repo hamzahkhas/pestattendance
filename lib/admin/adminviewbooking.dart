@@ -2,24 +2,22 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pestattendance/model/user.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-class TechBooking extends StatefulWidget {
-  const TechBooking({super.key});
+class AdminBooking extends StatefulWidget {
+  const AdminBooking({super.key});
 
   @override
-  State<TechBooking> createState() => _TechBookingState();
+  State<AdminBooking> createState() => _AdminBookingState();
 }
 
-class _TechBookingState extends State<TechBooking> {
+class _AdminBookingState extends State<AdminBooking> {
   double screenHeight = 0;
   double screenWidth = 0;
   String firstName = '';
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  String selectedStatus = 'Pending';
+  String selectedStatus = 'All booking';
 
   void _getFirstName() async {
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
@@ -48,9 +46,9 @@ class _TechBookingState extends State<TechBooking> {
     screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.purple.shade800,
+        backgroundColor: Colors.blue.shade800,
         title: Text(
-          'Service Appointment',
+          'Booking',
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -65,11 +63,15 @@ class _TechBookingState extends State<TechBooking> {
               onChanged: (String? newValue) {
                 setState(() {
                   selectedStatus =
-                      newValue ?? 'Pending'; // Update selected role
+                      newValue ?? 'All booking'; // Update selected role
                 });
               },
-              items: <String>['Pending', 'Confirmed']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: <String>[
+                'All booking',
+                'Pending',
+                'Confirmed',
+                'Completed'
+              ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -115,7 +117,8 @@ class _TechBookingState extends State<TechBooking> {
                         for (DocumentSnapshot bookingDoc
                             in bookingSnapshot.docs) {
                           // pending
-                          if (bookingDoc['status'] == selectedStatus) {
+                          if (selectedStatus == 'All booking' ||
+                              bookingDoc['status'] == selectedStatus) {
                             bookingWidget.add(
                               ListTile(
                                 title: Row(
@@ -138,7 +141,7 @@ class _TechBookingState extends State<TechBooking> {
                                     SizedBox(
                                       width: 140,
                                     ),
-                                    Text(userDoc['firstName'])
+                                    Text(bookingDoc['status'])
                                   ],
                                 ),
                                 onTap: () {
@@ -162,6 +165,9 @@ class _TechBookingState extends State<TechBooking> {
                                             bookingDoc['technicianContact'],
                                         custAddress: bookingDoc['custAddress'],
                                         custContact: bookingDoc['custContact'],
+                                        serviceDate: bookingDoc['serviceDate'],
+                                        serviceCompleteTime:
+                                            bookingDoc['serviceCompleteTime'],
                                         bookingId: bookingDoc.id,
                                         userId: docId,
                                         firstName: userDoc['firstName'],
@@ -223,6 +229,8 @@ class BookingDetails extends StatefulWidget {
   final String userId;
   final String firstName;
   final String lastName;
+  final String serviceDate;
+  final String serviceCompleteTime;
 
   BookingDetails({
     required this.applicationDate,
@@ -239,6 +247,8 @@ class BookingDetails extends StatefulWidget {
     required this.userId,
     required this.firstName,
     required this.lastName,
+    required this.serviceDate,
+    required this.serviceCompleteTime,
   });
 
   @override
@@ -282,9 +292,9 @@ class _BookingDetailsState extends State<BookingDetails> {
       appBar: AppBar(
         title: Text(
           'Pest: ${widget.pestType}',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue.shade800,
         leading: IconTheme(
           data:
               IconThemeData(color: Colors.black), // Set the desired color here
@@ -421,7 +431,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                             if (widget.status == 'Completed')
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade700,
+                                  color: Colors.black87,
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(5),
                                   ),
@@ -438,83 +448,77 @@ class _BookingDetailsState extends State<BookingDetails> {
                       )
                     ],
                   ),
-                  if (widget.status == 'Confirmed')
-                    DataRow(
-                      cells: [
-                        DataCell(
-                          Text(
-                            'Contact No',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        DataCell(
-                          GestureDetector(
-                            onTap: () {
-                              launch("tel:${widget.custContact}");
-                            },
-                            child: Text(
-                              '${widget.custContact}',
-                              style: TextStyle(
-                                fontSize: 16,
-                                decoration: TextDecoration.underline,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
+                  // if (widget.status == 'Confirmed' )
+                  //   DataRow(
+                  //     cells: [
+                  //       DataCell(
+                  //         Text(
+                  //           'Contact No',
+                  //           style: TextStyle(
+                  //             fontWeight: FontWeight.bold,
+                  //             fontSize: 16,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //       DataCell(
+                  //         GestureDetector(
+                  //           onTap: () {
+                  //             launch("tel:${widget.custContact}");
+                  //           },
+                  //           child: Text(
+                  //             '${widget.custContact}',
+                  //             style: TextStyle(
+                  //               fontSize: 16,
+                  //               decoration: TextDecoration.underline,
+                  //               color: Colors.blue,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
                 ],
               ),
-
-              // address
-              if (widget.status != 'Completed')
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    "Address",
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
               SizedBox(
-                height: 10,
+                height: 20,
               ),
-              if (widget.status != 'Completed')
-                Container(
-                  width: 300,
-                  margin: EdgeInsets.only(bottom: 16),
-                  child: GestureDetector(
-                    onTap: () {
-                      launch(
-                          'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(widget.custAddress)}');
-                    },
-                    child: TextFormField(
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                      maxLines: 4,
-                      initialValue: '${widget.custAddress}',
-                      enabled: false,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey.shade200,
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+
+              // // address
+              // if (widget.status != 'Completed')
+              //   Align(
+              //     alignment: Alignment.topCenter,
+              //     child: Text(
+              //       "Address",
+              //       style: const TextStyle(
+              //         color: Colors.black87,
+              //         fontWeight: FontWeight.bold,
+              //         fontSize: 16,
+              //       ),
+              //     ),
+              //   ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // if (widget.status != 'Completed')
+              //   Container(
+              //     width: 300,
+              //     margin: EdgeInsets.only(bottom: 16),
+              //     child: TextFormField(
+              //       style: TextStyle(fontSize: 16, color: Colors.black),
+              //       maxLines: 3,
+              //       initialValue: '${widget.custAddress}',
+              //       // enabled: false,
+              //       decoration: InputDecoration(
+              //         filled: true,
+              //         fillColor: Colors.grey.shade100,
+              //         border: OutlineInputBorder(
+              //           borderSide: BorderSide(
+              //             color: Colors.black,
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
 
               Align(
                 alignment: Alignment.topCenter,
@@ -537,14 +541,17 @@ class _BookingDetailsState extends State<BookingDetails> {
                   style: TextStyle(fontSize: 16, color: Colors.black),
                   maxLines: 3,
                   initialValue: '${widget.bookingDescription}',
-                  enabled: false,
+                  // enabled: false,
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.grey.shade100,
+                    fillColor: Colors.grey.shade200,
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
                         color: Colors.black,
                       ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                   ),
                 ),
@@ -577,137 +584,83 @@ class _BookingDetailsState extends State<BookingDetails> {
                   ),
                 ),
 
-              if (widget.status == 'Pending')
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: 20,
+              // when completed
+              if (widget.status == 'Completed')
+                DataTable(
+                  columns: [
+                    DataColumn(
+                      label: Text(
+                        "Completed By",
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          if (!isButtonClicked) {
-                            isButtonClicked = true;
-                          }
-                          updateBookingStatus('Confirmed');
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 200,
-                          margin: EdgeInsets.only(top: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.green.shade700,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Accept',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  letterSpacing: 2),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        "${widget.technicianName}",
+                        style: const TextStyle(
+                          color: Colors.black87,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                  rows: [
+                    DataRow(
+                      cells: [
+                        DataCell(
+                          Text(
+                            "Service Date",
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              if (widget.status == 'Confirmed')
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: 20,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          if (!isButtonClicked) {
-                            isButtonClicked = true;
-                          }
-                          updateBookingStatus('Completed');
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 200,
-                          margin: EdgeInsets.only(top: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.black87,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(10),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Completed',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                  letterSpacing: 2),
+                        DataCell(
+                          Text(
+                            "${widget.serviceDate}",
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                    DataRow(
+                      cells: [
+                        DataCell(
+                          Text(
+                            "Service Time",
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          Text(
+                            "${widget.serviceCompleteTime}",
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  void updateBookingStatus(String newStatus) {
-    if (newStatus == 'Completed') {
-      FirebaseFirestore.instance
-          .collection('User')
-          .doc(User.docId)
-          .collection('CompletedBooking')
-          .add(
-        {
-          'serviceDate': DateFormat('dd MMMM yyyy').format(DateTime.now()),
-          'serviceCompleteTime':
-              DateFormat('HH:mm:ss a').format((DateTime.now())),
-          'custName': widget.firstName,
-          'pestType': widget.pestType,
-          'status': newStatus,
-          'description': widget.bookingDescription,
-          'technicianName': widget.firstName,
-          'bookingDate': widget.applicationDate,
-        },
-      );
-    }
-    FirebaseFirestore.instance
-        .collection('User')
-        .doc(widget.userId)
-        .collection('Booking')
-        .doc(widget.bookingId)
-        .update({
-      'status': newStatus,
-      'technicianName': User.firstName,
-      'technicianContact': User.contact,
-      'serviceDate': DateFormat('dd MMMM yyyy').format(DateTime.now()),
-      'serviceCompleteTime': DateFormat('HH:mm:ss a').format((DateTime.now())),
-    }).then((value) {
-      setState(() {
-        widget.status = newStatus;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Booking is ' + newStatus + '!'),
-        ),
-      );
-    }).catchError((error) {
-      print(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to ' + newStatus + ' booking!')),
-      );
-    });
   }
 }

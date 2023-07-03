@@ -76,7 +76,9 @@ class _CustCreateBookingState extends State<CustCreateBooking> {
         'custContact': User.contact,
         'status': 'Pending',
         'technicianName': '',
-        'technicianContact': ''
+        'technicianContact': '',
+        'serviceDate': '',
+        'serviceCompleteTime': '',
       },
     );
 

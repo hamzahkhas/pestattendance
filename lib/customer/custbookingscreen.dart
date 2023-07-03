@@ -116,6 +116,11 @@ class _CustBookingState extends State<CustBooking> {
                       );
                     }
                   }
+                  if (bookingWidgets.isEmpty) {
+                    return Center(
+                      child: Text('No bookings found.'),
+                    );
+                  }
                   return ListView(
                     children: bookingWidgets,
                   );
@@ -173,18 +178,18 @@ class BookingDetails extends StatefulWidget {
 }
 
 class _BookingDetailsState extends State<BookingDetails> {
-  late TextEditingController bookingDetailsController;
+  late TextEditingController bookingDescriptionController;
 
   @override
   void initState() {
     super.initState();
-    bookingDetailsController =
+    bookingDescriptionController =
         TextEditingController(text: widget.bookingDescription);
   }
 
   // delete function: makes sure if its responded, cannot delete the application
   void deleteBooking() {
-    if (widget.status == 'Confirmed') {
+    if (widget.status != 'Pending') {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Cannot Delete: Booking ${widget.status}')));
     } else {
@@ -460,9 +465,9 @@ class _BookingDetailsState extends State<BookingDetails> {
                 child: TextFormField(
                   style: TextStyle(fontSize: 16, color: Colors.black),
                   maxLines: 6,
-                  initialValue: '${widget.bookingDescription}',
-                  enabled: false,
-                  // controller: bookingDetailsController,
+                  // initialValue: '${widget.bookingDescription}',
+                  // enabled: true,
+                  controller: bookingDescriptionController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.grey.shade100,
@@ -472,24 +477,29 @@ class _BookingDetailsState extends State<BookingDetails> {
                       ),
                     ),
                   ),
+                  // onChanged: (value) {
+
+                  // },
                 ),
               ),
               if (widget.status != 'Confirmed')
                 ElevatedButton(
                   onPressed: () {
-                    String updatedLeaveDescription =
-                        bookingDetailsController.text.trim();
+                    String updatedBookingDescription =
+                        bookingDescriptionController.text.trim();
 
+                    print(User.docId);
+                    print(widget.bookingId);
                     FirebaseFirestore.instance
                         .collection('User')
                         .doc(User.docId)
                         .collection('Booking')
                         .doc(widget.bookingId)
                         .update({
-                      'leaveDescription': updatedLeaveDescription,
+                      'bookingDescription': updatedBookingDescription,
                     }).then((value) {
                       setState(() {
-                        widget.bookingDescription = updatedLeaveDescription;
+                        widget.bookingDescription = updatedBookingDescription;
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Leave Description Updated')),
@@ -502,6 +512,7 @@ class _BookingDetailsState extends State<BookingDetails> {
                       );
                     });
                   },
+                  style: ElevatedButton.styleFrom(primary: Colors.black54),
                   child: Text(
                     'Update Details',
                   ),

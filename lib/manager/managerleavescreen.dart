@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_string_interpolations, prefer_interpolation_to_compose_strings, must_be_immutable, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, unnecessary_string_interpolations, prefer_interpolation_to_compose_strings, must_be_immutable, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -238,147 +238,147 @@ class _LeaveDetailsState extends State<LeaveDetails> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  Text(
-                    'Name',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+              DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text(
+                      'Name',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                  SizedBox(
-                    width: 33,
+                  DataColumn(
+                    label: Text(
+                      '${widget.firstName} ${widget.lastName}',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
-                  Text(
-                    '${widget.firstName} ${widget.lastName}',
-                    style: TextStyle(fontSize: 16),
+                ],
+                rows: [
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Applied',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.applicationDate}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Start Date',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.startDate}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'End Date',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.endDate}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Days',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.noOfDays} day(s)',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Leave Type',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.leaveType}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                  DataRow(
+                    cells: [
+                      DataCell(
+                        Text(
+                          'Leave Status',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      DataCell(
+                        Text(
+                          '${widget.leaveStatus}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
               SizedBox(
-                height: 15,
+                height: 10,
               ),
-              Row(
-                children: [
-                  Text(
-                    'Application Date',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 33,
-                  ),
-                  Text(
-                    '${widget.applicationDate}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-
-              // start date
-              Row(
-                children: [
-                  Text(
-                    'Start Date',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 79,
-                  ),
-                  Text(
-                    '${widget.startDate}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-
-              // end date
-              Row(
-                children: [
-                  Text(
-                    'End Date',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 88,
-                  ),
-                  Text(
-                    '${widget.endDate}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-
-              // leave type
-              Row(
-                children: [
-                  Text(
-                    'Leave Type',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 72,
-                  ),
-                  Text(
-                    '${widget.leaveType}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-
-              //
-              Row(
-                children: [
-                  Text(
-                    'Leave Status',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 61,
-                  ),
-                  Text(
-                    '${widget.leaveStatus}',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 15,
-              ),
-
               if (widget.leaveType != 'Medical Leave')
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.topCenter,
                   child: Text(
                     "Reason",
                     style: const TextStyle(
@@ -388,12 +388,16 @@ class _LeaveDetailsState extends State<LeaveDetails> {
                     ),
                   ),
                 ),
+              SizedBox(
+                height: 10,
+              ),
               if (widget.leaveType != 'Medical Leave')
                 Container(
+                  width: 300,
                   margin: EdgeInsets.only(bottom: 16),
                   child: TextFormField(
                     style: TextStyle(fontSize: 16, color: Colors.black),
-                    maxLines: 6,
+                    maxLines: 4,
                     initialValue: '${widget.leaveDescription}',
                     enabled: false,
                     decoration: InputDecoration(
@@ -407,10 +411,12 @@ class _LeaveDetailsState extends State<LeaveDetails> {
                     ),
                   ),
                 ),
-
               if (widget.leaveStatus == 'Pending')
                 Row(
                   children: [
+                    SizedBox(
+                      width: 45,
+                    ),
                     GestureDetector(
                       onTap: () {
                         if (!isButtonClicked) {
@@ -420,7 +426,7 @@ class _LeaveDetailsState extends State<LeaveDetails> {
                       },
                       child: Container(
                         height: 50,
-                        width: 170,
+                        width: 125,
                         margin: EdgeInsets.only(top: 10),
                         decoration: BoxDecoration(
                           color: Colors.red.shade700,
@@ -451,7 +457,7 @@ class _LeaveDetailsState extends State<LeaveDetails> {
                       },
                       child: Container(
                         height: 50,
-                        width: 170,
+                        width: 125,
                         margin: EdgeInsets.only(top: 10),
                         decoration: BoxDecoration(
                           color: Colors.green.shade700,

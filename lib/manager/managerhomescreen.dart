@@ -4,8 +4,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pestattendance/admin/adminmanageusersscreen.dart';
 import 'package:pestattendance/manager/managerattdscreen2.dart';
+import 'package:pestattendance/manager/managerbooking.dart';
 import 'package:pestattendance/manager/managerleavescreen.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
@@ -26,9 +26,9 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
   int currentIndex = 1;
 
   List<IconData> navigationIcons = [
-    // FontAwesomeIcons.list,
-    Icons.holiday_village_outlined,
-    FontAwesomeIcons.clipboardList,
+    FontAwesomeIcons.servicestack,
+    FontAwesomeIcons.calendarAlt,
+    FontAwesomeIcons.list,
     // FontAwesomeIcons.userPlus,
     FontAwesomeIcons.userAlt,
   ];
@@ -60,6 +60,7 @@ class _ManagerHomeScreenState extends State<ManagerHomeScreen> {
       body: IndexedStack(
         index: currentIndex,
         children: [
+          ManagerBooking(),
           ManagerLeaveScreen(),
           ManagerAttd(),
           // ManageUserScreen(),
