@@ -10,7 +10,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pestattendance/admin/adminhomescreen.dart';
-import 'package:pestattendance/admin/scan.dart';
+import 'package:pestattendance/scan.dart';
 import 'package:pestattendance/customer/custhomescreen.dart';
 import 'package:pestattendance/manager/managerhomescreen.dart';
 import 'package:pestattendance/technician/technicianhomescreen.dart';

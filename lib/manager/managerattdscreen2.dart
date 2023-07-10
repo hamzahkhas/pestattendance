@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 class ManagerAttd extends StatefulWidget {
@@ -150,6 +149,7 @@ class _ManagerAttdState extends State<ManagerAttd> {
       ),
       body: Column(
         children: [
+          // generate report button is currently being hidden as i have issues on pulling the data
           // ElevatedButton(
           //   onPressed: () {
           //     generateReport();

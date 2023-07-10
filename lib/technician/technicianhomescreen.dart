@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pestattendance/model/user.dart';
 import 'package:pestattendance/profilescreen.dart';
-import 'package:pestattendance/technician/techbookingprototype.dart';
+import 'package:pestattendance/technician/techbooking.dart';
 import 'package:pestattendance/technician/technicianmanageleave.dart';
 import 'package:pestattendance/technician/technicianattdscreen.dart';
 import 'package:pestattendance/technician/technicianviewbookinghistory.dart';
