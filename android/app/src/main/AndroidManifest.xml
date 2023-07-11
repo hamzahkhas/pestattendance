@@ -10,7 +10,7 @@
 
     
    <application
-        android:label="pestattendance"
+        android:label="e-Pest"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
